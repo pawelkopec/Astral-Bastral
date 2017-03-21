@@ -1,6 +1,6 @@
 # Astral Bastral
-#
-# Authors:
-# - Kamil Lisiński
-# - Paweł Kopeć
-# - Michał Górecki
+
+Authors
+- Kamil Lisiński
+- Michał Górecki
+- Paweł Kopeć
