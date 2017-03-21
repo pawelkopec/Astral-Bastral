@@ -1,5 +1,7 @@
 package server;
 
+import java.io.IOException;
+
 /**
  * Created by Paweł Kopeć on 21.03.17.
  *
@@ -8,7 +10,7 @@ package server;
  */
 public interface AccessPoint {
 
-    void sendData(byte[] data);
+    void sendData(byte[] data) throws IOException;
 
-    byte[] getData();
+    byte[] getData() throws IOException;
 }
