@@ -2,10 +2,13 @@ package server;
 
 /**
  * Created by Paweł Kopeć on 21.03.17.
+ *
+ * A class that provides a two-way connection
+ * with another host;
  */
-public class AccessPoint implements Runnable {
-    @Override
-    public void run() {
-        //TODO
-    }
+public interface AccessPoint {
+
+    void sendData(byte[] data);
+
+    byte[] getData();
 }

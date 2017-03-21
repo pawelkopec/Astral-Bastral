@@ -3,7 +3,7 @@ package game;
 /**
  * Created by Paweł Kopeć on 21.03.17.
  *
- * Action performed on game.
+ * A class for player in a game.
  */
-public class Action {
+public class Player {
 }
