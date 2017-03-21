@@ -9,6 +9,16 @@ import server.AccessPoint;
  */
 public class AstralBastralGame implements Game {
 
+    private final static int MAX_PLAYERS = 4;
+    private Player [] players = new Player[MAX_PLAYERS];
+
+
+    public AstralBastralGame() {
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            players[i] = null;
+        }
+    }
+
     @Override
     public void performAction(Action action, long playerId) {
 
@@ -31,6 +41,7 @@ public class AstralBastralGame implements Game {
 
     @Override
     public Action parseAction(byte[] args) {
+
         return null;
     }
 }
