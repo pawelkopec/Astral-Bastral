@@ -13,4 +13,6 @@ public interface AccessPoint {
     void sendData(byte[] data) throws IOException;
 
     byte[] getData() throws IOException;
+
+    void close();
 }

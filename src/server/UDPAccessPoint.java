@@ -15,12 +15,11 @@ import java.util.Arrays;
  */
 public class UDPAccessPoint implements AccessPoint {
 
-    private static final int MAX_IN_BUFF_SIZE = 65507, MAX_OUT_BUFF_SIZE = 65507, MAX_PORT_NUM = 65535;
+    private static final int MAX_IN_BUFF_SIZE = 65507, MAX_OUT_BUFF_SIZE = 65507;
 
     private static final String IN_BUFF_SIZE_NON_POSITIVE = "Input buffer size must be positive.";
     private static final String IN_BUFF_SIZE_OUT_OF_RANGE = "Input buffer size must be not greater than " + MAX_IN_BUFF_SIZE + ".";
     private static final String DATA_SIZE_OUT_OF_RANGE = "Size of data to be sent cannot be bigger than " + MAX_OUT_BUFF_SIZE + ".";
-    private static final String INVALID_PORT_NUMBER = "Port number must have a value between 0 and " + MAX_PORT_NUM + ".";
 
     private DatagramSocket in;
     private DatagramSocket out;
@@ -38,8 +37,10 @@ public class UDPAccessPoint implements AccessPoint {
             throw new IllegalArgumentException(IN_BUFF_SIZE_OUT_OF_RANGE);
         }
 
-        if (peerPort < 0 || 65535 < peerPort) {
-            throw new IllegalArgumentException(INVALID_PORT_NUMBER);
+        if (!Ports.isValidPortNumber(portIn) ||
+            !Ports.isValidPortNumber(portOut)||
+            !Ports.isValidPortNumber(peerPort)) {
+            throw new IllegalArgumentException(Ports.INVALID_PORT_NUMBER);
         }
 
         in = new DatagramSocket(portIn);
@@ -69,6 +70,12 @@ public class UDPAccessPoint implements AccessPoint {
         DatagramPacket packet = new DatagramPacket(inBuff, inBuff.length);
         in.receive(packet);
         return Arrays.copyOf(packet.getData(), packet.getLength());
+    }
+
+    @Override
+    public void close() {
+        in.close();
+        out.close();
     }
 
     public InetAddress getPeerAddress() {

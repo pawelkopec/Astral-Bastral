@@ -17,4 +17,9 @@ public class TCPAccessPoint implements  AccessPoint{
     public byte[] getData() {
         return new byte[0];
     }
+
+    @Override
+    public void close() {
+
+    }
 }
