@@ -71,6 +71,10 @@ public class UDPAccessPoint implements AccessPoint {
         return Arrays.copyOf(packet.getData(), packet.getLength());
     }
 
+    public InetAddress getPeerAddress() {
+        return peerAddress;
+    }
+
     public int getPortIn() {
         return in.getPort();
     }
