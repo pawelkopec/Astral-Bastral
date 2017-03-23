@@ -18,4 +18,8 @@ public interface Game {
     void removePlayer(long playerId);
 
     Action parseAction(byte[] args);
+
+    void sendUpdates();
+
+    boolean isActive();
 }

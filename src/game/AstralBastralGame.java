@@ -37,4 +37,14 @@ public class AstralBastralGame implements Game {
 
         return null;
     }
+
+    @Override
+    public void sendUpdates() {
+
+    }
+
+    @Override
+    public boolean isActive() {
+        return false;
+    }
 }
