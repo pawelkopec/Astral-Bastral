@@ -4,6 +4,7 @@ import game.Game;
 
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.*;
 
 /**
  * Created by Paweł Kopeć on 21.03.17.
@@ -13,10 +14,28 @@ import java.net.SocketException;
  */
 public class ClientConnectionManager implements Runnable {
 
+    private static final int NO_PORT = -1;
+    private static final Integer [] DEFAULT_PORTS = {5000, 5001};
+
     private Game game;
+    private LinkedList<Integer> availablePorts;
+
+    public ClientConnectionManager(Game game, Collection<Integer> ports) {
+        this.game = game;
+        this.availablePorts = new LinkedList<>();
+        for (Integer port : ports) {
+            if (Ports.isValidPortNumber(port)) {
+                availablePorts.add(port);
+            }
+        }
+    }
+
+    public ClientConnectionManager(Game game, Integer [] ports) {
+        this(game, new ArrayList<Integer>(Arrays.asList(ports)));
+    }
 
     public ClientConnectionManager(Game game) {
-        this.game = game;
+        this(game, DEFAULT_PORTS);
     }
 
     @Override
@@ -33,9 +52,19 @@ public class ClientConnectionManager implements Runnable {
      */
     private void establishConnection(int peerPort, InetAddress address) {
         UDPAccessPoint accessPoint = null;
+        int portIn, portOut;
         while (true) {
             try {
-                accessPoint = new UDPAccessPoint(getNewPortIn(), getNewPortOut(), peerPort, address);
+                portIn = popPort();
+                portOut = popPort();
+                if (portIn != NO_PORT && portOut != NO_PORT) {
+                    accessPoint = new UDPAccessPoint(portIn, portOut, peerPort, address);
+                }
+                else {
+                    pushPort(portIn);
+                    pushPort(portOut);
+                }
+
                 break;
             } catch (SocketException ignored) {}
         }
@@ -46,16 +75,15 @@ public class ClientConnectionManager implements Runnable {
     /**
      * Create new AccessPoint that handles the same client.
      *
-     * @param accessPoint broken AccessPoint
+     * @param peerPort of a client
+     * @param address of a client
      * @return new AccessPoint
      */
-    public UDPAccessPoint newAccessPoint(UDPAccessPoint accessPoint) {
+    private UDPAccessPoint newAccessPoint(int peerPort, InetAddress address) {
         UDPAccessPoint newAccessPoint = null;
         while (true) {
             try {
-                newAccessPoint = new UDPAccessPoint(getNewPortIn(), getNewPortOut(),
-                        accessPoint.getPeerPort(),
-                        accessPoint.getPeerAddress());
+                newAccessPoint = new UDPAccessPoint(popPort(), popPort(), peerPort, address);
                 break;
             } catch (SocketException ignored) {}
         }
@@ -63,13 +91,28 @@ public class ClientConnectionManager implements Runnable {
         return newAccessPoint;
     }
 
-    private int getNewPortIn() {
-        //TODO available port management
+    /**
+     * Create new AccessPoint that handles the same client.
+     *
+     * @param accessPoint old AccessPOint
+     * @return new AccessPoint
+     */
+    public UDPAccessPoint newAccessPoint(UDPAccessPoint accessPoint) {
+        return newAccessPoint(accessPoint.getPeerPort(), accessPoint.getPeerAddress());
+    }
+
+    public void destroyAccessPoint(UDPAccessPoint accessPoint) {
+        pushPort(accessPoint.getPortIn());
+        pushPort(accessPoint.getPortOut());
+        accessPoint.close();
+    }
+
+    private int popPort() {
+        //TODO
         return 0;
     }
 
-    private int getNewPortOut() {
-        //TODO available port management
-        return 0;
+    private void pushPort(int port) {
+        //TODO
     }
 }
