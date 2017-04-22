@@ -5,7 +5,12 @@ package game;
  */
 public abstract class GameEntity {
 
+    // Temporary constant collision range for entities.
+    private static final float COLLISION_RANGE = (float) 20.0;
+
+
     protected GameEntitiesTypes type;
+    protected boolean active;
 
     // Position fields.
     protected float x, y;
@@ -24,6 +29,8 @@ public abstract class GameEntity {
             float x, float y, float rotation,
             int hp, int collisionDmg
     ) {
+        this.type = type;
+        this.active = true;
         this.x = x;
         this.y = y;
         this.rotation = rotation;
@@ -33,10 +40,42 @@ public abstract class GameEntity {
         this.collisionDmg = collisionDmg;
     }
 
+    public GameEntitiesTypes getType() {
+        return type;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void receiveDamage(int damage) {
+        hp -= damage;
+        if (hp <= 0) {
+           active = false;
+        }
+    }
+
     // Abstract methods which define how particular entity moves and
     // how it behaves when collision occurs.
     public abstract void move();
     public abstract boolean[] getCollisionWhiteList();
-    public abstract void collide(GameEntity entity);
+
+    public void collide(GameEntity entity) {
+        entity.receiveDamage(collisionDmg);
+    }
+
+    public boolean isCollidingWith(GameEntity entity) {
+        return Math.abs(entity.getX() - x) +
+               Math.abs((entity.getY() - y)) <= COLLISION_RANGE &&
+               (active && entity.isActive());
+    }
 
 }

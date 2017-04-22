@@ -41,8 +41,4 @@ public class Asteroid extends GameEntity {
         return collisionWhiteList;
     }
 
-    public void collide(GameEntity entity){
-
-    }
-
 }

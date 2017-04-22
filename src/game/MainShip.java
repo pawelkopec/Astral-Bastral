@@ -36,8 +36,4 @@ public class MainShip extends Ship {
         return collisionWhiteList;
     }
 
-    public void collide(GameEntity entity){
-
-    }
-
 }

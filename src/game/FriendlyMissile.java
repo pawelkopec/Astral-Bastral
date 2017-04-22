@@ -35,8 +35,4 @@ public class FriendlyMissile extends Missile {
         return collisionWhiteList;
     }
 
-    public void collide(GameEntity entity){
-
-    }
-
 }

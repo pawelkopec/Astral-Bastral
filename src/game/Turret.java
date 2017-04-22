@@ -35,8 +35,4 @@ public class Turret extends GameEntity {
         return collisionWhiteList;
     }
 
-    public void collide(GameEntity entity){
-
-    }
-
 }
