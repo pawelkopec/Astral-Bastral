@@ -7,9 +7,10 @@ package game;
  */
 public abstract class Missile extends GameEntity {
 
-    // Temporary constant for missile hp and dmg.
+    // Temporary constant for missile hp, dmg and speed.
     private static final int MISSILE_HP = 1;
     private static final int MISSILE_DMG = 10;
+    private static final float MISSILE_SPEED = (float) 5.0;
 
 
     protected MissilesTypes missileType;
@@ -21,6 +22,11 @@ public abstract class Missile extends GameEntity {
     ) {
         super(type, x, y, rotation, MISSILE_HP, MISSILE_DMG);
         this.missileType = missileType;
+    }
+
+    public void move() {
+        x += MISSILE_SPEED * dx;
+        y += MISSILE_SPEED * dy;
     }
 
 }

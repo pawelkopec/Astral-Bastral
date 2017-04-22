@@ -5,9 +5,24 @@ package game;
  */
 public class EnemyShip extends Ship {
 
-    private static final int ENEMY_SHIP_HP = 10000;
-    private static final int ENEMY_SHIP_DMG = 50;
+    private static final int ENEMY_SHIP_HP = 50;
+    private static final int ENEMY_SHIP_DMG = 10;
     private static final float ENEMY_SHIP_SPEED = (float) 0.0;
+
+    private static boolean[] collisionWhiteList;
+
+    static {
+        collisionWhiteList = new boolean[GameEntitiesTypes.values().length];
+        collisionWhiteList[GameEntitiesTypes.MAIN_SHIP.getValue()] = true;
+        collisionWhiteList[GameEntitiesTypes.TURRET.getValue()] = false;
+        collisionWhiteList[
+        GameEntitiesTypes.FRIENDLY_MISSILE.getValue()
+        ] = true;
+        collisionWhiteList[GameEntitiesTypes.ENEMY_MISSILE.getValue()] = true;
+        collisionWhiteList[GameEntitiesTypes.ENEMY_SHIP.getValue()] = true;
+        collisionWhiteList[GameEntitiesTypes.ASTEROID.getValue()] = true;
+    }
+
 
     public EnemyShip(float x, float y, float rotation) {
         super(
@@ -18,7 +33,7 @@ public class EnemyShip extends Ship {
     }
 
     public boolean[] getCollisionWhiteList(){
-        return null;
+        return collisionWhiteList;
     }
 
     public void collide(GameEntity entity){
