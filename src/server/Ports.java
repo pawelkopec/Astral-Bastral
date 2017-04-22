@@ -1,7 +1,7 @@
 package server;
 
 /**
- * Created by vivace on 23.03.17.
+ * Created by Paweł Kopeć on 23.03.17.
  *
  * Helpful class for port management.
  */
