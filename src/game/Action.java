@@ -49,13 +49,13 @@ public class Action {
 
         // Loop, which extracts missiles data and fills missilesToSpawn array
         // with newly created Missile objects.
-        short missileType;
+        MissilesTypes missileType;
         float missileX, missileY, missileRotation;
         for (int i = 0; i < MAX_MISSILES_PER_ACTION; i++) {
 
             // Extract data from buffer with respect
             // to previously given description.
-            missileType = bufferedDescription.getShort();
+            missileType = MissilesTypes.values()[bufferedDescription.getShort()];
             missileRotation = bufferedDescription.getFloat();
             missileX = bufferedDescription.getFloat();
             missileY = bufferedDescription.getFloat();
@@ -65,7 +65,7 @@ public class Action {
             // element in the array, that was not filled by player has its type
             // set to Missile.EMPTY_MISSILE_TYPE. If we encounter first such
             // missile in the byte set we can...
-            if (missileType == Missile.EMPTY_MISSILE_TYPE) {
+            if (missileType == MissilesTypes.EMPTY_MISSILE) {
 
                 // ... set all remaining missilesToSpawn array
                 // elements to null and stop reading the buffer.
@@ -78,7 +78,8 @@ public class Action {
             // Else we simply set current missilesToSpawn element
             // to new Missile object reference.
             else {
-                missilesToSpawn[i] = new Missile(
+                missilesToSpawn[i] = new FriendlyMissile(
+                    missileType,
                     missileX,
                     missileY,
                     missileRotation

@@ -5,12 +5,22 @@ package game;
  *
  * Class describing in-game missile.
  */
-public class Missile {
+public abstract class Missile extends GameEntity {
 
-    public static final int EMPTY_MISSILE_TYPE = -1;
+    // Temporary constant for missile hp and dmg.
+    private static final int MISSILE_HP = 1;
+    private static final int MISSILE_DMG = 10;
 
-    public Missile(float x, float y, float rotation) {
 
+    protected MissilesTypes missileType;
+
+
+    public Missile(
+            GameEntitiesTypes type, MissilesTypes missileType,
+            float x, float y, float rotation
+    ) {
+        super(type, x, y, rotation, MISSILE_HP, MISSILE_DMG);
+        this.missileType = missileType;
     }
 
 }
