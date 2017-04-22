@@ -4,7 +4,8 @@ import game.Game;
 
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.*;
+
+import static server.Ports.NO_PORT;
 
 /**
  * Created by Paweł Kopeć on 21.03.17.
@@ -14,28 +15,24 @@ import java.util.*;
  */
 public class ClientConnectionManager implements Runnable {
 
-    private static final int NO_PORT = -1;
-    private static final Integer [] DEFAULT_PORTS = {5000, 5001};
+    private static final String GAME_NULL = "Game cannot be null";
+    private static final String PORT_MANAGER_NULL = "Port manager cannot be null";
 
     private Game game;
-    private LinkedList<Integer> availablePorts;
 
-    public ClientConnectionManager(Game game, Collection<Integer> ports) {
-        this.game = game;
-        this.availablePorts = new LinkedList<>();
-        for (Integer port : ports) {
-            if (Ports.isValidPortNumber(port)) {
-                availablePorts.add(port);
-            }
+    private PortManager portManager;
+
+    public ClientConnectionManager(Game game, PortManager portManager) {
+        if (game == null) {
+            throw new NullPointerException(GAME_NULL);
         }
-    }
 
-    public ClientConnectionManager(Game game, Integer [] ports) {
-        this(game, new ArrayList<Integer>(Arrays.asList(ports)));
-    }
+        if (portManager == null) {
+            throw new NullPointerException(PORT_MANAGER_NULL);
+        }
 
-    public ClientConnectionManager(Game game) {
-        this(game, DEFAULT_PORTS);
+        this.game = game;
+        this.portManager = portManager;
     }
 
     @Override
@@ -51,23 +48,7 @@ public class ClientConnectionManager implements Runnable {
      * @param address of a new client
      */
     private void establishConnection(int peerPort, InetAddress address) {
-        UDPAccessPoint accessPoint = null;
-        int portIn, portOut;
-        while (true) {
-            try {
-                portIn = popPort();
-                portOut = popPort();
-                if (portIn != NO_PORT && portOut != NO_PORT) {
-                    accessPoint = new UDPAccessPoint(portIn, portOut, peerPort, address);
-                }
-                else {
-                    pushPort(portIn);
-                    pushPort(portOut);
-                }
-
-                break;
-            } catch (SocketException ignored) {}
-        }
+        UDPAccessPoint accessPoint = newAccessPoint(peerPort, address);
 
         //TODO creating and activating new client
     }
@@ -81,12 +62,17 @@ public class ClientConnectionManager implements Runnable {
      */
     private UDPAccessPoint newAccessPoint(int peerPort, InetAddress address) {
         UDPAccessPoint newAccessPoint = null;
-        while (true) {
-            try {
-                newAccessPoint = new UDPAccessPoint(popPort(), popPort(), peerPort, address);
-                break;
-            } catch (SocketException ignored) {}
+
+        int portIn = portManager.getAvailablePort();
+        int portOut = portManager.getAvailablePort();
+
+        if (!portsFine(portIn, portOut)) {
+            return null;
         }
+
+        try {
+            newAccessPoint = new UDPAccessPoint(portIn, portOut, peerPort, address);
+        } catch (SocketException ignored) {}
 
         return newAccessPoint;
     }
@@ -102,17 +88,12 @@ public class ClientConnectionManager implements Runnable {
     }
 
     public void destroyAccessPoint(UDPAccessPoint accessPoint) {
-        pushPort(accessPoint.getPortIn());
-        pushPort(accessPoint.getPortOut());
+        portManager.freePort(accessPoint.getPortIn());
+        portManager.freePort(accessPoint.getPortOut());
         accessPoint.close();
     }
 
-    private int popPort() {
-        //TODO
-        return 0;
-    }
-
-    private void pushPort(int port) {
-        //TODO
+    private boolean portsFine(int portIn, int portOut) {
+        return portIn != NO_PORT && portOut != NO_PORT;
     }
 }
