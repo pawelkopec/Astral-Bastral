@@ -12,6 +12,10 @@ public class Ports {
     static final String INVALID_PORT_NUMBER = "Port number must have a value between " + MIN_PORT_NUM + " and " + MAX_PORT_NUM + ".";
 
     static boolean isValidPortNumber(int port) {
+        return 0 <= port && port <= MAX_PORT_NUM;
+    }
+
+    static boolean isValidListeningPortNumber(int port) {
         return MIN_PORT_NUM <= port && port <= MAX_PORT_NUM;
     }
 }

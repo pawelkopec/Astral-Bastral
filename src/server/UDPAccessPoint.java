@@ -20,6 +20,7 @@ public class UDPAccessPoint implements AccessPoint {
     private static final String IN_BUFF_SIZE_NON_POSITIVE = "Input buffer size must be positive.";
     private static final String IN_BUFF_SIZE_OUT_OF_RANGE = "Input buffer size must be not greater than " + MAX_IN_BUFF_SIZE + ".";
     private static final String DATA_SIZE_OUT_OF_RANGE = "Size of data to be sent cannot be bigger than " + MAX_OUT_BUFF_SIZE + ".";
+    private static final String SOCKET_DISCONNECTED = "UDP socket cannot connect on port %d.";
 
     private DatagramSocket in;
     private DatagramSocket out;
@@ -37,8 +38,8 @@ public class UDPAccessPoint implements AccessPoint {
             throw new IllegalArgumentException(IN_BUFF_SIZE_OUT_OF_RANGE);
         }
 
-        if (!Ports.isValidPortNumber(portIn) ||
-            !Ports.isValidPortNumber(portOut)||
+        if (!Ports.isValidListeningPortNumber(portIn) ||
+            !Ports.isValidListeningPortNumber(portOut)||
             !Ports.isValidPortNumber(peerPort)) {
             throw new IllegalArgumentException(Ports.INVALID_PORT_NUMBER);
         }
@@ -83,11 +84,11 @@ public class UDPAccessPoint implements AccessPoint {
     }
 
     public int getPortIn() {
-        return in.getPort();
+        return in.getLocalPort();
     }
 
     public int getPortOut() {
-        return out.getPort();
+        return out.getLocalPort();
     }
 
     public int getPeerPort() {
