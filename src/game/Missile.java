@@ -1,5 +1,8 @@
 package game;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by puchake on 21.03.17.
  *
@@ -28,6 +31,18 @@ public abstract class Missile extends GameEntity {
     public void move() {
         x += MISSILE_SPEED * dx;
         y += MISSILE_SPEED * dy;
+    }
+
+    @Override
+    public void writeTo(DataOutputStream output) throws IOException {
+        output.writeShort(type.getValue());
+
+        // Missiles need to also output their missile type.
+        output.writeShort(missileType.getValue());
+
+        output.writeFloat(x);
+        output.writeFloat(y);
+        output.writeFloat(rotation);
     }
 
 }
