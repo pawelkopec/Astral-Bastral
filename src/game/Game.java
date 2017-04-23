@@ -11,8 +11,6 @@ public interface Game {
 
     void performAction(Action action, long playerId);
 
-    byte[] getStateUpdate(long playerId);
-
     void addPlayer(AccessPoint accessPoint);
 
     void removePlayer(long playerId);

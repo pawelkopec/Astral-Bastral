@@ -90,5 +90,13 @@ public class Action {
 
     }
 
+    public float getRotation() {
+        return rotation;
+    }
+
+    public Missile[] getMissilesToSpawn() {
+        return missilesToSpawn;
+    }
+
 
 }
