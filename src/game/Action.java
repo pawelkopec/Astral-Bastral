@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  * NOTES:
  * - Missile class may significantly change,
  * - There may be alternations to packet format such as
- *   additional parameters describing engine thurst added
+ *   additional parameters describing engine thrust added
  *   at the end of file.
  */
 public class Action {

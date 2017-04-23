@@ -19,7 +19,5 @@ public interface Game {
 
     Action parseAction(byte[] args);
 
-    void sendUpdates();
-
     boolean isActive();
 }
