@@ -2,20 +2,25 @@ package game;
 
 /**
  * Created by micha on 22.04.2017.
+ *
+ * Enum which contains available missiles types.
  */
 public enum MissilesTypes {
 
-    EMPTY_MISSILE(-1);
+    // Available missiles types instances.
+    EMPTY_MISSILE((short) -1),
+    BASIC_MISSILE((short) 0);
 
 
-    private final int value;
+    // Variable which contains particular missile type numeric representation.
+    private final short value;
 
 
-    MissilesTypes(int value) {
+    MissilesTypes(short value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public short getValue() {
         return value;
     }
 

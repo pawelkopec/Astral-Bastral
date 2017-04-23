@@ -2,12 +2,18 @@ package game;
 
 /**
  * Created by micha on 22.04.2017.
+ *
+ * Class representing enemy missiles.
  */
 public class EnemyMissile extends Missile {
 
+    // Collision white list common to all enemy missiles.
     private static boolean[] collisionWhiteList;
 
     static {
+
+        // Enemy missiles can't collide with each other, enemy ships and with
+        // turrets.
         collisionWhiteList = new boolean[GameEntitiesTypes.values().length];
         collisionWhiteList[GameEntitiesTypes.MAIN_SHIP.getValue()] = true;
         collisionWhiteList[GameEntitiesTypes.TURRET.getValue()] = false;

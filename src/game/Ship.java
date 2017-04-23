@@ -2,9 +2,12 @@ package game;
 
 /**
  * Created by micha on 22.04.2017.
+ *
+ * Base class for ships used in the game.
  */
 public abstract class Ship extends GameEntity {
 
+    // Speed of the ship.
     protected float speed;
 
 
@@ -17,6 +20,7 @@ public abstract class Ship extends GameEntity {
         this.speed = speed;
     }
 
+    @Override
     public void move() {
         x += speed * dx;
         y += speed * dy;

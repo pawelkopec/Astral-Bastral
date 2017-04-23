@@ -24,6 +24,7 @@ public abstract class Missile extends GameEntity {
         this.missileType = missileType;
     }
 
+    @Override
     public void move() {
         x += MISSILE_SPEED * dx;
         y += MISSILE_SPEED * dy;

@@ -32,7 +32,7 @@ public class GameMaster {
     public void init() {
         //ClientConnectionManager manager = new ClientConnectionManager(game);
         //TODO manager setup
-        new Thread(manager).start();
+        //new Thread(manager).start();
     }
 
     public void gameLoop() throws InterruptedException {
@@ -42,10 +42,6 @@ public class GameMaster {
             // get game state update
             // send it to players
         }
-    }
-
-    public void sendUpdates() {
-
     }
 
 }

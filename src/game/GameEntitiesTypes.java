@@ -7,22 +7,24 @@ package game;
  */
 public enum GameEntitiesTypes {
 
-    MAIN_SHIP(0),
-    TURRET(1),
-    FRIENDLY_MISSILE(2),
-    ENEMY_MISSILE(3),
-    ENEMY_SHIP(4),
-    ASTEROID(5);
+    // Types of all entities used in the game.
+    MAIN_SHIP((short) 0),
+    TURRET((short) 1),
+    FRIENDLY_MISSILE((short) 2),
+    ENEMY_MISSILE((short) 3),
+    ENEMY_SHIP((short) 4),
+    ASTEROID((short) 5);
 
 
-    private final int value;
+    // Number representing type of entity.
+    private final short value;
 
 
-    GameEntitiesTypes(int value) {
+    GameEntitiesTypes(short value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public short getValue() {
         return value;
     }
 
