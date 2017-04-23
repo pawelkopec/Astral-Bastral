@@ -11,7 +11,7 @@ public class GameMaster {
 
     private static final String ILLEGAL_UPDATE_TIME = "Update time must be positive.";
 
-    private static final int DEFAULT_UPDATE_TIME = 300;
+    private static final int DEFAULT_UPDATE_TIME = 20;
 
     private Game game;
     private int updateTime;
@@ -38,9 +38,8 @@ public class GameMaster {
     public void gameLoop() throws InterruptedException {
         while (game.isActive()) {
             Thread.sleep(updateTime);
-            // make game tick
-            // get game state update
-            // send it to players
+            game.makeTurn();
+            game.sendUpdates();
         }
     }
 

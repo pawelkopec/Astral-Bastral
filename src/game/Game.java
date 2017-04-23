@@ -9,13 +9,11 @@ import server.AccessPoint;
  */
 public interface Game {
 
-    void performAction(Action action, long playerId);
-
-    byte[] getStateUpdate(long playerId);
+    void performAction(Action action, int playerId);
 
     void addPlayer(AccessPoint accessPoint);
 
-    void removePlayer(long playerId);
+    void removePlayer(int playerId);
 
     Action parseAction(byte[] args);
 
