@@ -24,7 +24,7 @@ public class ThreadTester {
         thread.start();
     }
 
-    public void checkAsserion() throws InterruptedException {
+    public void checkAssertion() throws InterruptedException {
         thread.join();
         if (exc != null) {
             throw exc;

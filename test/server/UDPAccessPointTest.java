@@ -20,11 +20,11 @@ class UDPAccessPointTest {
     private static final int PORT_LISTEN = 9092;
     private static final int PORT_SEND = 9093;
     private static final int PORT_PEER = 80;
-    private static final String PEER_IP = "google.com";
+    private static final String PEER_HOST = "localhost";
 
     @Test
     void getPortInTest() throws UnknownHostException, SocketException {
-        InetAddress peerAddress = InetAddress.getByName(PEER_IP);
+        InetAddress peerAddress = InetAddress.getByName(PEER_HOST);
         UDPAccessPoint udpAccessPoint = new UDPAccessPoint(PORT_IN, PORT_OUT, PORT_PEER, peerAddress);
 
         try {
@@ -36,7 +36,7 @@ class UDPAccessPointTest {
 
     @Test
     void getPortOutTest() throws UnknownHostException, SocketException {
-        InetAddress peerAddress = InetAddress.getByName(PEER_IP);
+        InetAddress peerAddress = InetAddress.getByName(PEER_HOST);
         UDPAccessPoint udpAccessPoint = new UDPAccessPoint(PORT_IN, PORT_OUT, PORT_PEER, peerAddress);
 
         try {
@@ -48,7 +48,7 @@ class UDPAccessPointTest {
 
     @Test
     void getPortPeerTest() throws UnknownHostException, SocketException {
-        InetAddress peerAddress = InetAddress.getByName(PEER_IP);
+        InetAddress peerAddress = InetAddress.getByName(PEER_HOST);
         UDPAccessPoint udpAccessPoint = new UDPAccessPoint(PORT_IN, PORT_OUT, PORT_PEER, peerAddress);
 
         try {
@@ -60,7 +60,7 @@ class UDPAccessPointTest {
 
     @Test
     void getPeerAddressTest() throws UnknownHostException, SocketException {
-        InetAddress peerAddress = InetAddress.getByName(PEER_IP);
+        InetAddress peerAddress = InetAddress.getByName(PEER_HOST);
         UDPAccessPoint udpAccessPoint = new UDPAccessPoint(PORT_IN, PORT_OUT, PORT_PEER, peerAddress);
 
         try {
@@ -100,7 +100,7 @@ class UDPAccessPointTest {
         threadTester.startThread();
         udpAccessPoint.sendData(data);
 
-        threadTester.checkAsserion();
+        threadTester.checkAssertion();
         udpAccessPoint.close();
         listeningSocket.close();
     }
@@ -134,7 +134,7 @@ class UDPAccessPointTest {
         threadTester.startThread();
         sendingSocket.send(sendPacket);
 
-        threadTester.checkAsserion();
+        threadTester.checkAssertion();
         udpAccessPoint.close();
         sendingSocket.close();
     }
