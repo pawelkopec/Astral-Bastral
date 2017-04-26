@@ -102,7 +102,7 @@ public class AstralBastralGame implements Game {
 
     @Override
     // Shouldn't it return player id???
-    public void addPlayer(AccessPoint accessPoint) {
+    public int addPlayer(AccessPoint accessPoint) {
         Turret playerTurret;
         int turretIndex;
         for (int i = 0; i < MAX_PLAYERS; i++) {
@@ -129,8 +129,10 @@ public class AstralBastralGame implements Game {
                 turretIndex = addEntity(playerTurret);
 
                 players[i] = new Player(i, turretIndex, accessPoint);
+                return i;
             }
         }
+        return -1;
     }
 
     @Override

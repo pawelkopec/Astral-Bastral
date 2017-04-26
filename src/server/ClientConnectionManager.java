@@ -2,7 +2,7 @@ package server;
 
 import game.Game;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -22,7 +22,7 @@ import static server.Ports.NO_PORT;
  */
 public class ClientConnectionManager implements Runnable {
 
-    private static final int CLIENT_RESPONSE_TIMEOUT = 100;
+    private static final int CLIENT_RESPONSE_TIMEOUT = 1000000;
 
     private static final String GAME_NULL = "Game cannot be null";
     private static final String PORT_MANAGER_NULL = "Port manager cannot be null";
@@ -71,7 +71,7 @@ public class ClientConnectionManager implements Runnable {
             try {
                 socket = listeningSocket.accept();
                 localPort = portManager.getAvailablePort();
-                socket.getOutputStream().write(localPort);
+                new DataOutputStream(socket.getOutputStream()).writeInt(localPort);
 
                 if (localPort != NO_PORT) {
                     executor.submit(new HandleClient(socket));
@@ -93,8 +93,15 @@ public class ClientConnectionManager implements Runnable {
         @Override
         public void run() {
             try {
-                int clientPort = socket.getInputStream().read();
-                game.addPlayer(newAccessPoint(clientPort, socket.getInetAddress()));
+                DataInputStream input = new DataInputStream(socket.getInputStream());
+                int clientPort = input.readInt();
+                UDPAccessPoint clientAccessPoint = newAccessPoint(clientPort, socket.getInetAddress());
+                game.addPlayer(clientAccessPoint);
+                System.out.println("New client on " + clientAccessPoint.getPeerAddress() + " on port " + clientAccessPoint.getPeerPort());
+                while (true) {
+                    System.out.println("Elo melo    ");
+                    clientAccessPoint.getData();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

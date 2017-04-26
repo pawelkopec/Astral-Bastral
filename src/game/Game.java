@@ -11,7 +11,7 @@ public interface Game {
 
     void performAction(Action action, int playerId);
 
-    void addPlayer(AccessPoint accessPoint);
+    int addPlayer(AccessPoint accessPoint);
 
     void removePlayer(int playerId);
 
