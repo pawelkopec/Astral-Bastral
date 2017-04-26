@@ -70,12 +70,7 @@ public class ClientConnectionManager implements Runnable {
         while (working) {
             try {
                 socket = listeningSocket.accept();
-                localPort = portManager.getAvailablePort();
-                new DataOutputStream(socket.getOutputStream()).writeInt(localPort);
-
-                if (localPort != NO_PORT) {
-                    executor.submit(new HandleClient(socket));
-                }
+                executor.submit(new HandleClient(socket));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -93,17 +88,27 @@ public class ClientConnectionManager implements Runnable {
         @Override
         public void run() {
             try {
-                DataInputStream input = new DataInputStream(socket.getInputStream());
-                int clientPort = input.readInt();
-                UDPAccessPoint clientAccessPoint = newAccessPoint(clientPort, socket.getInetAddress());
-                game.addPlayer(clientAccessPoint);
-                System.out.println("New client on " + clientAccessPoint.getPeerAddress() + " on port " + clientAccessPoint.getPeerPort());
-                while (true) {
-                    System.out.println("Elo melo    ");
-                    clientAccessPoint.getData();
+                int localPort, clientPort;
+                localPort = portManager.getAvailablePort();
+                if (localPort == NO_PORT) {
+                    throw new SocketException();
                 }
+
+                new DataOutputStream(socket.getOutputStream()).writeInt(localPort);
+                clientPort = new DataInputStream(socket.getInputStream()).readInt();
+
+                UDPAccessPoint clientAccessPoint = newAccessPoint(clientPort, localPort, socket.getInetAddress());
+                game.addPlayer(clientAccessPoint);
+
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+            finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -115,10 +120,9 @@ public class ClientConnectionManager implements Runnable {
      * @param address of a client
      * @return new AccessPoint
      */
-    private UDPAccessPoint newAccessPoint(int peerPort, InetAddress address) {
+    private UDPAccessPoint newAccessPoint(int peerPort, int portIn, InetAddress address) {
         UDPAccessPoint newAccessPoint = null;
 
-        int portIn = portManager.getAvailablePort();
         int portOut = portManager.getAvailablePort();
 
         if (!portsFine(portIn, portOut)) {
