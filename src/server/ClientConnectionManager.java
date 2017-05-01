@@ -29,15 +29,22 @@ public class ClientConnectionManager implements Runnable {
     private static final String GAME_NULL = "Game cannot be null";
     private static final String PORT_MANAGER_NULL = "Port manager cannot be null";
 
+    private static final String LISTENING_STARTED = "Started listening on port %d";
+    private static final String NEW_CONNECTION = "Accepted new connection with %s on port %d";
+    private static final String NEW_PLAYER = "New player added to with id %d";
+    private static final String NO_PORTS_AVAILABLE = "No ports available for a new player";
+    private static final String ADDING_NEW_PLAYER_FAILED = "Adding new player from %s";
+
     private Game game;
     private ServerSocket listeningSocket;
 
     private PortManager portManager;
     private ExecutorService executor;
+    private Logger logger;
 
     private boolean working;
 
-    public ClientConnectionManager(Game game, PortManager portManager, int listeningPort) throws IOException {
+    public ClientConnectionManager(Game game, PortManager portManager, int listeningPort, Logger logger) throws IOException {
         if (game == null) {
             throw new NullPointerException(GAME_NULL);
         }
@@ -49,6 +56,13 @@ public class ClientConnectionManager implements Runnable {
         if (!Ports.isValidListeningPortNumber(listeningPort)) {
             throw new IllegalArgumentException(Ports.INVALID_PORT_NUMBER);
         }
+
+        if (logger == null) {
+            this.logger = Logger.getDefaultLogger();
+        } else {
+            this.logger = logger;
+        }
+        this.logger.initialize();
 
         this.game = game;
         this.portManager = portManager;
@@ -64,18 +78,28 @@ public class ClientConnectionManager implements Runnable {
     @Override
     public void run() {
 
+        //TODO managing loop
         working = true;
+        Socket socket = null;
 
-        int localPort;
-        Socket socket;
+        logger.accept(String.format(LISTENING_STARTED, listeningSocket.getLocalPort()));
 
         while (working) {
             try {
                 socket = listeningSocket.accept();
+                logger.accept(String.format(NEW_CONNECTION, socket.getInetAddress(), socket.getPort()));
                 executor.submit(new HandleClient(socket));
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        //TODO closing all resources in another method
+        try {
+            socket.close();
+            logger.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -95,17 +119,25 @@ public class ClientConnectionManager implements Runnable {
             int localPort, clientPort;
             try {
                 localPort = portManager.getAvailablePort();
-                if (localPort == NO_PORT) {
-                    throw new SocketException();
-                }
-
                 clientOutputStream = new DataOutputStream(socket.getOutputStream());
                 clientInputStream = new DataInputStream(socket.getInputStream());
+
+                if (localPort == NO_PORT) {
+                    logger.accept(NO_PORTS_AVAILABLE);
+                    return;
+                }
+
                 clientOutputStream.writeInt(localPort);
                 clientPort = clientInputStream.readInt();
 
                 clientAccessPoint = newAccessPoint(clientPort, localPort, socket.getInetAddress());
-                game.addPlayer(clientAccessPoint);
+                int playerId = game.addPlayer(clientAccessPoint);
+
+                if (playerId != Game.FAILURE) {
+                    logger.accept(String.format(NEW_PLAYER, playerId));
+                } else {
+                    logger.accept(String.format(ADDING_NEW_PLAYER_FAILED, socket.getInetAddress()));
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
