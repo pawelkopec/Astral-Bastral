@@ -9,6 +9,8 @@ import server.AccessPoint;
  */
 public interface Game {
 
+    public static final int FAILURE = -1;
+
     void performAction(Action action, int playerId);
 
     int addPlayer(AccessPoint accessPoint);
