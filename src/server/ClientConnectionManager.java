@@ -2,7 +2,9 @@ package server;
 
 import game.Game;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -87,24 +89,40 @@ public class ClientConnectionManager implements Runnable {
 
         @Override
         public void run() {
+            UDPAccessPoint clientAccessPoint = null;
+            DataOutputStream clientOutputStream = null;
+            DataInputStream clientInputStream = null;
+            int localPort, clientPort;
             try {
-                int localPort, clientPort;
                 localPort = portManager.getAvailablePort();
                 if (localPort == NO_PORT) {
                     throw new SocketException();
                 }
 
-                new DataOutputStream(socket.getOutputStream()).writeInt(localPort);
-                clientPort = new DataInputStream(socket.getInputStream()).readInt();
+                clientOutputStream = new DataOutputStream(socket.getOutputStream());
+                clientInputStream = new DataInputStream(socket.getInputStream());
+                clientOutputStream.writeInt(localPort);
+                clientPort = clientInputStream.readInt();
 
-                UDPAccessPoint clientAccessPoint = newAccessPoint(clientPort, localPort, socket.getInetAddress());
+                clientAccessPoint = newAccessPoint(clientPort, localPort, socket.getInetAddress());
                 game.addPlayer(clientAccessPoint);
 
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 try {
+                    if (clientAccessPoint != null) {
+                        clientAccessPoint.close();
+                    }
+
+                    if (clientInputStream != null) {
+                        clientInputStream.close();
+                    }
+
+                    if (clientOutputStream != null) {
+                        clientOutputStream.close();
+                    }
+
                     socket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
