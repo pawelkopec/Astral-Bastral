@@ -30,8 +30,13 @@ public class Turret extends GameEntity {
     }
 
 
-    public Turret(float x, float y, float rotation) {
+    // Id needed to connect turret to player.
+    private int playerId;
+
+
+    public Turret(int playerId, float x, float y, float rotation) {
         super(GameEntitiesTypes.TURRET, x, y, rotation, TURRET_HP, TURRET_DMG);
+        this.playerId = playerId;
     }
 
     // Method used to rotate turret.
@@ -41,6 +46,11 @@ public class Turret extends GameEntity {
 
     public boolean[] getCollisionWhiteList(){
         return collisionWhiteList;
+    }
+
+    // Might be not needed.
+    public int getPlayerId() {
+        return playerId;
     }
 
 }

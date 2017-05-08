@@ -5,6 +5,7 @@ import server.AccessPoint;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -34,12 +35,19 @@ public class AstralBastralGame implements Game {
     private final static float MIN_Y = -1024.0f;
 
     // State update parameters.
-    private static final int REFRESH_BYTES_OFFSET = 12;
+    private static final int REFRESH_BYTES_OFFSET = 32;
 
     // Constant turrets coordinates and starting rotation.
     private static final float[] TURRET_XS = {25.0f, 25.0f, -25.0f, -25.0f};
     private static final float[] TURRET_YS = {25.0f, -25.0f, -25.0f, 25.0f};
     private static final float STARTING_ROTATION = 0f;
+
+    // Constant empty player index and empty turret rotation.
+    private static final int EMPTY_PLAYER_INDEX = -1;
+    private static final float EMPTY_ROTATION = 0.0f;
+
+    // Constant int size.
+    private static final int INT_SIZE = 4;
 
 
     // Arrays of all in-game entities and players.
@@ -54,6 +62,7 @@ public class AstralBastralGame implements Game {
     // indices, because that is all what is needed to destroy particular
     // entity at both client and server sides.
     private List<GameEntity> createdEntities;
+    private List<Integer> createdEntitiesIndices;
     private List<Integer> destructionIndices;
 
     // Index of current state refresh window in entities array.
@@ -73,6 +82,7 @@ public class AstralBastralGame implements Game {
 
         // Create lists for created and destroyed entities.
         createdEntities = new ArrayList<>();
+        createdEntitiesIndices = new ArrayList<>();
         destructionIndices = new ArrayList<>();
 
         stateRefreshIndex = 0;
@@ -124,7 +134,7 @@ public class AstralBastralGame implements Game {
 
                 // Create turret which will be assigned to player.
                 playerTurret = new Turret(
-                    TURRET_XS[i], TURRET_YS[i], STARTING_ROTATION
+                    i, TURRET_XS[i], TURRET_YS[i], STARTING_ROTATION
                 );
                 turretIndex = addEntity(playerTurret);
 
@@ -230,8 +240,13 @@ public class AstralBastralGame implements Game {
         }
 
         // Send updates to all players.
+        byte[] bytes;
         for (int i = 0; i < MAX_PLAYERS; i++) {
             if (players[i] != null) {
+                bytes = ByteBuffer.allocate(INT_SIZE).putInt(i).array();
+                for (int j = 0; j < INT_SIZE; j++) {
+                    update[j] = bytes[j];
+                }
                 try {
                     players[i].sendUpdate(update);
                 }
@@ -253,6 +268,7 @@ public class AstralBastralGame implements Game {
         int freeIndex = freeIndices.pop();
         entities[freeIndex] = entity;
         createdEntities.add(entity);
+        createdEntitiesIndices.add(freeIndex);
         return freeIndex;
     }
 
@@ -278,10 +294,11 @@ public class AstralBastralGame implements Game {
         output.flush();
         byte[] stateRefreshBytes = byteStream.toByteArray();
 
-        // Get created entities bytes.
+        // Get created entities bytes and their indices.
         byteStream.reset();
-        for (GameEntity entity : createdEntities) {
-            entity.writeTo(output);
+        for (int i = 0; i < createdEntities.size(); i++) {
+            output.writeInt(createdEntitiesIndices.get(i));
+            createdEntities.get(i).writeTo(output);
         }
         output.flush();
         byte[] createdEntitiesBytes = byteStream.toByteArray();
@@ -294,14 +311,26 @@ public class AstralBastralGame implements Game {
         output.flush();
         byte[] destroyedEntitiesBytes = byteStream.toByteArray();
 
-        // Output offsets of state update sectors.
+        // Output offsets of state update sectors and other necessary data.
         byteStream.reset();
+        output.writeInt(EMPTY_PLAYER_INDEX);
         output.writeInt(REFRESH_BYTES_OFFSET);
         output.writeInt(REFRESH_BYTES_OFFSET + stateRefreshBytes.length);
         output.writeInt(
             REFRESH_BYTES_OFFSET + stateRefreshBytes.length +
             createdEntitiesBytes.length
         );
+        output.writeInt(stateRefreshIndex);
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            if (players[i] != null) {
+                output.writeFloat(
+                    entities[players[i].getTurretIndex()].getRotation()
+                );
+            }
+            else {
+                output.writeFloat(EMPTY_ROTATION);
+            }
+        }
 
         // Output state update body: refresh, created entities and destroyed
         // indices bytes.
@@ -311,6 +340,7 @@ public class AstralBastralGame implements Game {
 
         // Clear lists of created and destroyed entities.
         createdEntities.clear();
+        createdEntitiesIndices.clear();
         destructionIndices.clear();
 
         return new byte[0];
