@@ -1,5 +1,8 @@
 package game;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by micha on 22.04.2017.
  *
@@ -51,6 +54,18 @@ public class Turret extends GameEntity {
     // Might be not needed.
     public int getPlayerId() {
         return playerId;
+    }
+
+    // Method used to output representation of turret in bytes to output.
+    public void writeTo(DataOutputStream output) throws IOException {
+        output.writeShort(type.getValue());
+
+        // Write this turret player's id to output.
+        output.writeInt(playerId);
+
+        output.writeFloat(x);
+        output.writeFloat(y);
+        output.writeFloat(rotation);
     }
 
 }
