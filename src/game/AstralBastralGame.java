@@ -334,9 +334,9 @@ public class AstralBastralGame implements Game {
 
         // Output state update body: refresh, created entities and destroyed
         // indices bytes.
-        output.write(stateRefreshBytes);
         output.write(createdEntitiesBytes);
         output.write(destroyedEntitiesBytes);
+        output.write(stateRefreshBytes);
 
         // Clear lists of created and destroyed entities.
         createdEntities.clear();
