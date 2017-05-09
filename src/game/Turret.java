@@ -1,5 +1,8 @@
 package game;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * Created by micha on 22.04.2017.
  *
@@ -30,8 +33,13 @@ public class Turret extends GameEntity {
     }
 
 
-    public Turret(float x, float y, float rotation) {
+    // Id needed to connect turret to player.
+    private int playerId;
+
+
+    public Turret(int playerId, float x, float y, float rotation) {
         super(GameEntitiesTypes.TURRET, x, y, rotation, TURRET_HP, TURRET_DMG);
+        this.playerId = playerId;
     }
 
     // Method used to rotate turret.
@@ -41,6 +49,23 @@ public class Turret extends GameEntity {
 
     public boolean[] getCollisionWhiteList(){
         return collisionWhiteList;
+    }
+
+    // Might be not needed.
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    // Method used to output representation of turret in bytes to output.
+    public void writeTo(DataOutputStream output) throws IOException {
+        output.writeShort(type.getValue());
+
+        // Write this turret player's id to output.
+        output.writeInt(playerId);
+
+        output.writeFloat(x);
+        output.writeFloat(y);
+        output.writeFloat(rotation);
     }
 
 }

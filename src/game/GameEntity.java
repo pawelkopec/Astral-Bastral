@@ -70,6 +70,10 @@ public abstract class GameEntity {
         return y;
     }
 
+    public float getRotation() {
+        return rotation;
+    }
+
     public void receiveDamage(int damage) {
         hp -= damage;
 
