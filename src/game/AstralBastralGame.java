@@ -315,10 +315,10 @@ public class AstralBastralGame implements Game {
         byteStream.reset();
         output.writeInt(EMPTY_PLAYER_INDEX);
         output.writeInt(REFRESH_BYTES_OFFSET);
-        output.writeInt(REFRESH_BYTES_OFFSET + stateRefreshBytes.length);
+        output.writeInt(REFRESH_BYTES_OFFSET + createdEntitiesBytes.length);
         output.writeInt(
-            REFRESH_BYTES_OFFSET + stateRefreshBytes.length +
-            createdEntitiesBytes.length
+            REFRESH_BYTES_OFFSET + createdEntitiesBytes.length +
+            destroyedEntitiesBytes.length
         );
         output.writeInt(stateRefreshIndex);
         for (int i = 0; i < MAX_PLAYERS; i++) {
