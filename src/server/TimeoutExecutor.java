@@ -23,6 +23,6 @@ public class TimeoutExecutor {
     }
 
     public static void execute(Runnable task, int timeout) {
-        execute(task, timeout, (ignored) -> {});
+        execute(task, timeout, ignored -> {});
     }
 }
