@@ -90,9 +90,10 @@ public class AstralBastralGame implements Game {
     }
 
     @Override
-    public void performAction(Action action, int playerId) {
+    public void performAction(byte[] args, int playerId) {
 
         // Rotate turret assigned to player.
+        Action action = new Action(args);
         int turretIndex = players[playerId].getTurretIndex();
         ((Turret) entities[turretIndex]).rotate(action.getRotation());
 
@@ -154,15 +155,6 @@ public class AstralBastralGame implements Game {
         removeEntity(turretIndex);
 
         players[playerId] = null;
-    }
-
-    @Override
-    public Action parseAction(byte[] args) {
-
-        // It might be prettier with action parsing in this method
-        // instead of the Action constructor.
-        return new Action(args);
-
     }
 
     @Override

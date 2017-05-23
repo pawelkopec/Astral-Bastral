@@ -28,8 +28,7 @@ public class ClientWorker implements Runnable{
         //TODO managing socket failures
         while (game.isActive()) {
             try {
-                Action action = game.parseAction(accessPoint.getData());
-                game.performAction(action, id);
+                game.performAction(accessPoint.getData(), id);
             } catch (IOException e) {
                 e.printStackTrace();
             }

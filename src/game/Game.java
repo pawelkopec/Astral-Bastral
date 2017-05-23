@@ -11,13 +11,11 @@ public interface Game {
 
     int FAILURE = -1;
 
-    void performAction(Action action, int playerId);
+    void performAction(byte[] args, int playerId);
 
     int addPlayer(AccessPoint accessPoint);
 
     void removePlayer(int playerId);
-
-    Action parseAction(byte[] args);
 
     void setActive(boolean active);
 
@@ -26,5 +24,4 @@ public interface Game {
     void makeTurn();
 
     void sendUpdates();
-
 }
