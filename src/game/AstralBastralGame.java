@@ -44,7 +44,7 @@ public class AstralBastralGame implements Game {
 
     // Constant empty player index and empty turret rotation.
     private static final int EMPTY_PLAYER_INDEX = -1;
-    private static final float EMPTY_ROTATION = 0.0f;
+    private static final float EMPTY_ROTATION = -1.0f;
 
     // Constant int size.
     private static final int INT_SIZE = 4;
