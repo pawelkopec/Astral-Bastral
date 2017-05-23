@@ -49,6 +49,7 @@ public class AstralBastralGame implements Game {
     // Constant int size.
     private static final int INT_SIZE = 4;
 
+    private boolean gameActive = false;
 
     // Arrays of all in-game entities and players.
     private Player [] players;
@@ -165,8 +166,13 @@ public class AstralBastralGame implements Game {
     }
 
     @Override
+    public void setActive(boolean active) {
+        gameActive = active;
+    }
+
+    @Override
     public boolean isActive() {
-        return false;
+        return gameActive;
     }
 
     @Override
