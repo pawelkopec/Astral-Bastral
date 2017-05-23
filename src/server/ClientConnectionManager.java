@@ -30,6 +30,7 @@ public class ClientConnectionManager implements Runnable {
     private static final String PORT_MANAGER_NULL = "Port manager cannot be null";
 
     private static final String LISTENING_STARTED = "Started listening on port %d";
+    private static final String LISTENING_FINISHED = "Finished listening on port %d";
     private static final String NEW_CONNECTION = "Accepted new connection with %s on port %d";
     private static final String NEW_UDP = "Received port %d for UDP connection";
     private static final String NEW_PLAYER = "New player added to with id %d";
@@ -43,7 +44,7 @@ public class ClientConnectionManager implements Runnable {
     private ExecutorService executor;
     private Logger logger;
 
-    private boolean working;
+    private boolean working = true;
 
     public ClientConnectionManager(Game game, PortManager portManager, int listeningPort, Logger logger) throws IOException {
         if (game == null) {
@@ -78,14 +79,10 @@ public class ClientConnectionManager implements Runnable {
 
     @Override
     public void run() {
-
-        //TODO managing loop
-        working = true;
         Socket socket = null;
-
         logger.accept(String.format(LISTENING_STARTED, listeningSocket.getLocalPort()));
 
-        while (working) {
+        while (working && game.isActive()) {
             try {
                 socket = listeningSocket.accept();
                 logger.accept(String.format(NEW_CONNECTION, socket.getInetAddress(), socket.getPort()));
@@ -95,9 +92,12 @@ public class ClientConnectionManager implements Runnable {
             }
         }
 
-        //TODO closing all resources in another method
+        logger.accept(String.format(LISTENING_FINISHED, listeningSocket.getLocalPort()));
+
         try {
-            socket.close();
+            if (socket != null) {
+                socket.close();
+            }
             logger.close();
         } catch (IOException e) {
             e.printStackTrace();
