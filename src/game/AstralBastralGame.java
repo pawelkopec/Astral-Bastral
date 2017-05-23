@@ -35,7 +35,7 @@ public class AstralBastralGame implements Game {
     private final static float MIN_Y = -1024.0f;
 
     // State update parameters.
-    private static final int REFRESH_BYTES_OFFSET = 32;
+    private static final int REFRESH_BYTES_OFFSET = 36;
 
     // Constant turrets coordinates and starting rotation.
     private static final float[] TURRET_XS = {48.0f, 48.0f, -48.0f, -48.0f};

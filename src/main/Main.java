@@ -22,6 +22,6 @@ public class Main {
         Game game = new AstralBastralGame();
         game.setActive(true);
         new Thread(new ClientConnectionManager(game, manager, 9090, null)).start();
-        new GameMaster(game).gameLoop();
+        new GameMaster(game, 30).gameLoop();
     }
 }
