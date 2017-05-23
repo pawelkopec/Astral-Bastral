@@ -138,6 +138,7 @@ public class ClientConnectionManager implements Runnable {
 
                 if (playerId != Game.FAILURE) {
                     logger.accept(String.format(NEW_PLAYER, playerId));
+                    new Thread(new ClientWorker(game, clientAccessPoint, playerId)).start();
                 } else {
                     logger.accept(String.format(ADDING_NEW_PLAYER_FAILED, socket.getInetAddress()));
                 }
@@ -146,10 +147,6 @@ public class ClientConnectionManager implements Runnable {
                 e.printStackTrace();
             } finally {
                 try {
-                    if (clientAccessPoint != null) {
-                        clientAccessPoint.close();
-                    }
-
                     if (clientInputStream != null) {
                         clientInputStream.close();
                     }
