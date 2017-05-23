@@ -19,6 +19,8 @@ public interface Game {
 
     Action parseAction(byte[] args);
 
+    void setActive(boolean active);
+
     boolean isActive();
 
     void makeTurn();
