@@ -4,6 +4,7 @@ import game.Action;
 import game.Game;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Created by Paweł Kopeć on 21.03.17.

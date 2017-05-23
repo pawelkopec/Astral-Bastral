@@ -69,8 +69,6 @@ public class UDPAccessPoint implements AccessPoint {
     public byte[] getData() throws IOException {
         DatagramPacket packet = new DatagramPacket(inBuff, inBuff.length);
         in.receive(packet);
-        System.out.println("Received packet from " + peerAddress + " from port " + peerPort);
-        System.out.println(Arrays.toString(inBuff));
 
         return Arrays.copyOf(packet.getData(), packet.getLength());
     }
