@@ -24,4 +24,13 @@ public enum MissilesTypes {
         return value;
     }
 
+    public static MissilesTypes getByValue(short value) {
+        for (MissilesTypes missileType : MissilesTypes.values()) {
+            if (missileType.getValue() == value) {
+                return missileType;
+            }
+        }
+        return EMPTY_MISSILE;
+    }
+
 }

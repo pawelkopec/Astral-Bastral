@@ -38,8 +38,8 @@ public class AstralBastralGame implements Game {
     private static final int REFRESH_BYTES_OFFSET = 32;
 
     // Constant turrets coordinates and starting rotation.
-    private static final float[] TURRET_XS = {25.0f, 25.0f, -25.0f, -25.0f};
-    private static final float[] TURRET_YS = {25.0f, -25.0f, -25.0f, 25.0f};
+    private static final float[] TURRET_XS = {48.0f, 48.0f, -48.0f, -48.0f};
+    private static final float[] TURRET_YS = {48.0f, -48.0f, -48.0f, 48.0f};
     private static final float STARTING_ROTATION = 0f;
 
     // Constant empty player index and empty turret rotation.

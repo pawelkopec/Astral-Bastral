@@ -2,6 +2,7 @@ package game;
 
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Created by Paweł Kopeć on 21.03.17.
@@ -55,7 +56,9 @@ public class Action {
 
             // Extract data from buffer with respect
             // to previously given description.
-            missileType = MissilesTypes.values()[bufferedDescription.getShort()];
+            missileType = MissilesTypes.getByValue(
+                bufferedDescription.getShort()
+            );
             missileRotation = bufferedDescription.getFloat();
             missileX = bufferedDescription.getFloat();
             missileY = bufferedDescription.getFloat();
