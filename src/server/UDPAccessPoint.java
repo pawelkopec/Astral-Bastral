@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class UDPAccessPoint implements AccessPoint {
 
-    private static final int MAX_IN_BUFF_SIZE = 2, MAX_OUT_BUFF_SIZE = 65507;
+    private static final int MAX_IN_BUFF_SIZE = 65507, MAX_OUT_BUFF_SIZE = 65507;
 
     private static final String IN_BUFF_SIZE_NON_POSITIVE = "Input buffer size must be positive.";
     private static final String IN_BUFF_SIZE_OUT_OF_RANGE = "Input buffer size must be not greater than " + MAX_IN_BUFF_SIZE + ".";
