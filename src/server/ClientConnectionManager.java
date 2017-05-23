@@ -31,9 +31,10 @@ public class ClientConnectionManager implements Runnable {
 
     private static final String LISTENING_STARTED = "Started listening on port %d";
     private static final String NEW_CONNECTION = "Accepted new connection with %s on port %d";
+    private static final String NEW_UDP = "Received port %d for UDP connection";
     private static final String NEW_PLAYER = "New player added to with id %d";
     private static final String NO_PORTS_AVAILABLE = "No ports available for a new player";
-    private static final String ADDING_NEW_PLAYER_FAILED = "Adding new player from %s";
+    private static final String ADDING_NEW_PLAYER_FAILED = "Adding new player from %s failed";
 
     private Game game;
     private ServerSocket listeningSocket;
@@ -122,13 +123,15 @@ public class ClientConnectionManager implements Runnable {
                 clientOutputStream = new DataOutputStream(socket.getOutputStream());
                 clientInputStream = new DataInputStream(socket.getInputStream());
 
+                clientOutputStream.writeInt(localPort);
+
                 if (localPort == NO_PORT) {
-                    logger.accept(NO_PORTS_AVAILABLE);
+                    logger.accept(String.format(NO_PORTS_AVAILABLE));
                     return;
                 }
 
-                clientOutputStream.writeInt(localPort);
                 clientPort = clientInputStream.readInt();
+                logger.accept(String.format(NEW_UDP, clientPort));
 
                 clientAccessPoint = newAccessPoint(clientPort, localPort, socket.getInetAddress());
                 int playerId = game.addPlayer(clientAccessPoint);
