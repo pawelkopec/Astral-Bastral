@@ -287,9 +287,14 @@ public class AstralBastralGame implements Game {
         // Get state update entities array window bytes.
         byteStream.reset();
         for (int i = 0; i < STATE_REFRESH_SIZE; i++) {
-            entities[
-                stateRefreshIndex * STATE_REFRESH_SIZE + i
-            ].writeTo(output);
+            if (entities[i] != null) {
+                entities[
+                    stateRefreshIndex * STATE_REFRESH_SIZE + i
+                ].writeTo(output);
+            }
+            else {
+                output.writeShort(GameEntitiesTypes.EMPTY_ENTITY.getValue());
+            }
         }
         output.flush();
         byte[] stateRefreshBytes = byteStream.toByteArray();
@@ -343,7 +348,9 @@ public class AstralBastralGame implements Game {
         createdEntitiesIndices.clear();
         destructionIndices.clear();
 
-        return new byte[0];
+        output.flush();
+
+        return byteStream.toByteArray();
     }
 
 
