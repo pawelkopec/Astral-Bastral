@@ -25,7 +25,8 @@ public class ClientWorker implements Runnable{
 
     @Override
     public void run() {
-        while (true) {
+        //TODO managing socket failures
+        while (game.isActive()) {
             try {
                 Action action = game.parseAction(accessPoint.getData());
                 game.performAction(action, id);
