@@ -8,6 +8,7 @@ package game;
 public enum GameEntitiesTypes {
 
     // Types of all entities used in the game.
+    EMPTY_ENTITY((short) -1),
     MAIN_SHIP((short) 0),
     TURRET((short) 1),
     FRIENDLY_MISSILE((short) 2),
