@@ -1,6 +1,8 @@
 package main;
 
 import game.AstralBastralGame;
+import game.Game;
+import game.GameMaster;
 import server.ClientConnectionManager;
 import server.PortManager;
 
@@ -10,13 +12,15 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         List<Integer> ports = new LinkedList<>();
         ports.add(8081);
         ports.add(8082);
         ports.add(8083);
         ports.add(8084);
         PortManager manager = new PortManager(ports, 2);
-        new Thread(new ClientConnectionManager(new AstralBastralGame(), manager, 9090, null)).start();
+        Game game = new AstralBastralGame();
+        new Thread(new ClientConnectionManager(game, manager, 9090, null)).start();
+        new GameMaster(game).gameLoop();
     }
 }

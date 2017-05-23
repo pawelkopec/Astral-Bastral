@@ -11,7 +11,7 @@ public class GameMaster {
 
     private static final String ILLEGAL_UPDATE_TIME = "Update time must be positive.";
 
-    private static final int DEFAULT_UPDATE_TIME = 20;
+    private static final int DEFAULT_UPDATE_TIME = 200;
 
     private Game game;
     private int updateTime;
