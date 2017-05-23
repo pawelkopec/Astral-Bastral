@@ -122,12 +122,12 @@ public class ClientConnectionManager implements Runnable {
                 clientOutputStream = new DataOutputStream(socket.getOutputStream());
                 clientInputStream = new DataInputStream(socket.getInputStream());
 
+                clientOutputStream.writeInt(localPort);
+
                 if (localPort == NO_PORT) {
-                    logger.accept(NO_PORTS_AVAILABLE);
                     return;
                 }
 
-                clientOutputStream.writeInt(localPort);
                 clientPort = clientInputStream.readInt();
 
                 clientAccessPoint = newAccessPoint(clientPort, localPort, socket.getInetAddress());
