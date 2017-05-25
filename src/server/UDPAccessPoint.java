@@ -13,7 +13,7 @@ import java.util.Arrays;
  * Implementation of two-way connection
  * implemented with UDP protocol.
  */
-public class UDPAccessPoint implements AccessPoint {
+class UDPAccessPoint implements AccessPoint {
 
     private static final int MAX_IN_BUFF_SIZE = 65507, MAX_OUT_BUFF_SIZE = 65507;
 
@@ -28,7 +28,7 @@ public class UDPAccessPoint implements AccessPoint {
 
     private byte inBuff[];
 
-    public UDPAccessPoint(int portIn, int portOut, int peerPort, InetAddress address, int inBuffSize) throws SocketException {
+    UDPAccessPoint(int portIn, int portOut, int peerPort, InetAddress address, int inBuffSize) throws SocketException {
         if (inBuffSize <= 0) {
             throw new IllegalArgumentException(IN_BUFF_SIZE_NON_POSITIVE);
         }
@@ -52,7 +52,7 @@ public class UDPAccessPoint implements AccessPoint {
         inBuff = new byte[inBuffSize];
     }
 
-    public UDPAccessPoint(int portIn, int portOut, int peerPort, InetAddress address) throws SocketException {
+    UDPAccessPoint(int portIn, int portOut, int peerPort, InetAddress address) throws SocketException {
         this(portIn, portOut, peerPort, address, MAX_IN_BUFF_SIZE);
     }
 
@@ -74,24 +74,28 @@ public class UDPAccessPoint implements AccessPoint {
     }
 
     @Override
-    public void close() {
-        in.close();
-        out.close();
-    }
-
     public InetAddress getPeerAddress() {
         return peerAddress;
     }
 
+    @Override
     public int getPortIn() {
         return in.getLocalPort();
     }
 
+    @Override
     public int getPortOut() {
         return out.getLocalPort();
     }
 
+    @Override
     public int getPeerPort() {
         return peerPort;
+    }
+
+    @Override
+    public void close() {
+        in.close();
+        out.close();
     }
 }
