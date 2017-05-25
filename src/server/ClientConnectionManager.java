@@ -10,10 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Collection;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import static server.Ports.NO_PORT;
 
@@ -41,7 +37,6 @@ public class ClientConnectionManager implements Runnable {
     private ServerSocket listeningSocket;
 
     private PortManager portManager;
-    private ExecutorService executor;
     private Logger logger;
 
     private boolean working = true;
@@ -66,11 +61,6 @@ public class ClientConnectionManager implements Runnable {
         this.portManager = new PortManager(ports);
 
         listeningSocket = new ServerSocket(listeningPort);
-        //TODO
-        executor = new ThreadPoolExecutor(1, 1,
-                CLIENT_RESPONSE_TIMEOUT,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
     }
 
     @Override
@@ -82,7 +72,7 @@ public class ClientConnectionManager implements Runnable {
             try {
                 socket = listeningSocket.accept();
                 logger.accept(String.format(NEW_CONNECTION, socket.getInetAddress(), socket.getPort()));
-                executor.submit(new HandleClient(socket));
+                new Thread(new HandleClient(socket)).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -122,7 +112,7 @@ public class ClientConnectionManager implements Runnable {
                 clientOutputStream.writeInt(localPort);
 
                 if (localPort == NO_PORT) {
-                    logger.accept(String.format(NO_PORTS_AVAILABLE));
+                    logger.accept(NO_PORTS_AVAILABLE);
                     return;
                 }
 
@@ -134,7 +124,8 @@ public class ClientConnectionManager implements Runnable {
 
                 if (playerId != Game.FAILURE) {
                     logger.accept(String.format(NEW_PLAYER, playerId));
-                    new Thread(new ClientWorker(game, clientAccessPoint, playerId)).start();
+                    new Thread(new ClientWorker(game, clientAccessPoint,
+                            ClientConnectionManager.this, playerId)).start();
                 } else {
                     logger.accept(String.format(ADDING_NEW_PLAYER_FAILED, socket.getInetAddress()));
                 }
@@ -182,7 +173,7 @@ public class ClientConnectionManager implements Runnable {
         return newAccessPoint;
     }
 
-    public void destroyAccessPoint(UDPAccessPoint accessPoint) {
+    void destroyAccessPoint(AccessPoint accessPoint) {
         portManager.freePort(accessPoint.getPortIn());
         portManager.freePort(accessPoint.getPortOut());
         accessPoint.close();
@@ -192,9 +183,12 @@ public class ClientConnectionManager implements Runnable {
         return portIn != NO_PORT && portOut != NO_PORT;
     }
 
-    public void stop() throws IOException {
+    public void stop() {
+        try {
+            listeningSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         working = false;
-        listeningSocket.close();
-        //TODO
     }
 }
