@@ -1,6 +1,8 @@
 package server;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Created by vivace on 22.04.17.
@@ -8,24 +10,16 @@ import java.util.*;
  * Class for providing and managing a given
  * collection of ports.
  */
-public class PortManager {
+class PortManager {
 
     private static final String PORTS_NULL = "Collection of ports cannot be null.";
-    private static final String INVALID_MAX_CONNECTIONS = "Max connections must be between 1 and %i";
 
     private HashMap<Integer, Boolean> portsAvailability;
-
     private LinkedList<Integer> availablePorts = new LinkedList<>();
 
-    private int maxConnections;
-
-    public PortManager(Collection<Integer> ports, int maxConnections) {
+    PortManager(Collection<Integer> ports) {
         if (ports == null) {
             throw new NullPointerException(PORTS_NULL);
-        }
-
-        if (maxConnections < 1 || ports.size() < maxConnections) {
-            throw new IllegalArgumentException(String.format(INVALID_MAX_CONNECTIONS, ports.size()));
         }
 
         portsAvailability = new HashMap<>(ports.size());
@@ -40,7 +34,7 @@ public class PortManager {
         }
     }
 
-    public int getAvailablePort() {
+    synchronized int getAvailablePort() {
         if (availablePorts.isEmpty()) {
             return Ports.NO_PORT;
         }
@@ -51,12 +45,10 @@ public class PortManager {
         return port;
     }
 
-    public void freePort(int port) {
-        if (!portsAvailability.containsKey(port)) {
-            throw new IllegalArgumentException();
+    synchronized void freePort(int port) {
+        if (portsAvailability.containsKey(port)) {
+            availablePorts.addLast(port);
+            portsAvailability.put(port, true);
         }
-
-        availablePorts.addLast(port);
-        portsAvailability.put(port, true);
     }
 }

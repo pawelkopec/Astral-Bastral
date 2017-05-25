@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -27,7 +28,6 @@ public class ClientConnectionManager implements Runnable {
     private static final int CLIENT_RESPONSE_TIMEOUT = 1000000;
 
     private static final String GAME_NULL = "Game cannot be null";
-    private static final String PORT_MANAGER_NULL = "Port manager cannot be null";
 
     private static final String LISTENING_STARTED = "Started listening on port %d";
     private static final String LISTENING_FINISHED = "Finished listening on port %d";
@@ -46,13 +46,9 @@ public class ClientConnectionManager implements Runnable {
 
     private boolean working = true;
 
-    public ClientConnectionManager(Game game, PortManager portManager, int listeningPort, Logger logger) throws IOException {
+    public ClientConnectionManager(Game game, Collection<Integer> ports, int listeningPort, Logger logger) throws IOException {
         if (game == null) {
             throw new NullPointerException(GAME_NULL);
-        }
-
-        if (portManager == null) {
-            throw new NullPointerException(PORT_MANAGER_NULL);
         }
 
         if (!Ports.isValidListeningPortNumber(listeningPort)) {
@@ -67,7 +63,7 @@ public class ClientConnectionManager implements Runnable {
         this.logger.initialize();
 
         this.game = game;
-        this.portManager = portManager;
+        this.portManager = new PortManager(ports);
 
         listeningSocket = new ServerSocket(listeningPort);
         //TODO
