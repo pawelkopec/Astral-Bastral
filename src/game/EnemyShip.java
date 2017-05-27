@@ -10,7 +10,7 @@ public class EnemyShip extends Ship {
     // Enemy ships constants.
     private static final int ENEMY_SHIP_HP = 50;
     private static final int ENEMY_SHIP_DMG = 10;
-    private static final float ENEMY_SHIP_SPEED = (float) 5.0;
+    private static final float ENEMY_SHIP_SPEED = (float) 15.0;
     private static final float MISSILE_SPAWN_PROBABILITY = (float) 0.05;
 
     // Collision white list unique to all enemy ships.

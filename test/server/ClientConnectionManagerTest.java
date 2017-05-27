@@ -2,13 +2,11 @@ package server;
 
 import game.Action;
 import game.Game;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.LinkedList;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by Paweł Kopeć on 22.04.17.

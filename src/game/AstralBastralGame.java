@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 
@@ -70,6 +71,9 @@ public class AstralBastralGame implements Game {
     private int stateRefreshIndex;
     private int updateIndex;
 
+    // Game random generator.
+    protected static Random randomGenerator;
+
 
     public AstralBastralGame() {
         players = new Player[MAX_PLAYERS];
@@ -89,6 +93,8 @@ public class AstralBastralGame implements Game {
 
         stateRefreshIndex = 0;
         updateIndex = 0;
+
+        randomGenerator = new Random();
     }
 
     @Override
@@ -173,10 +179,9 @@ public class AstralBastralGame implements Game {
     public void makeTurn(float deltaTime) {
         boolean[] collisionWhiteList;
         GameEntity createdEntity;
-
-        // First stage: action of all entities.
+        // First stage: action of all entities and spawning.
+        spawnObstacles();
         for (int i = 0; i < MAX_ENTITIES; i++) {
-
             // If there is space in entities array left.
             if (entities[i] != null && !freeIndices.empty()) {
                 createdEntity = entities[i].act();
@@ -188,9 +193,7 @@ public class AstralBastralGame implements Game {
             else if (freeIndices.empty()) {
                 break;
             }
-
         }
-
         // Second stage: move all entities. If they exit game field delete them
         // from entities array.
         for (int i = 0; i < MAX_ENTITIES; i++) {
@@ -204,7 +207,6 @@ public class AstralBastralGame implements Game {
                 }
             }
         }
-
         // Third stage: check collision between entities and remove these,
         // which die as a result of it.
         for (int i = 0; i < MAX_ENTITIES; i++) {
@@ -225,7 +227,38 @@ public class AstralBastralGame implements Game {
                 }
             }
         }
+    }
 
+    // Spawn enemy ships and/or asteroids.
+    private void spawnObstacles() {
+        float ASTEROID_SPAWN_PROBABILITY = 0.1f;
+        float ENEMY_SHIP_SPAWN_PROBABILITY = 0.05f;
+        float MIN_X = 400.0f;
+        float MIN_Y = 400.0f;
+        float asteroidSpawn = randomGenerator.nextFloat();
+        float enemyShipSpawn = randomGenerator.nextFloat();
+        if (asteroidSpawn < ASTEROID_SPAWN_PROBABILITY) {
+            // Get random x and y outside of 800 x 800 square centered at
+            // (0, 0).
+            float x = randomGenerator.nextFloat() * (MAX_X - MIN_X) + MIN_X;
+            float y = randomGenerator.nextFloat() * (MAX_Y - MIN_Y) + MIN_Y;
+            // Randomly negate x and/or y.
+            x = randomGenerator.nextBoolean() ? x : -x;
+            y = randomGenerator.nextBoolean() ? y : -y;
+            float rotation = (float) Math.PI * randomGenerator.nextFloat() / 2;
+            rotation -= (Math.PI * 5.0 / 4.0 - Math.atan2(y, x));
+            addEntity(new Asteroid(x, y, rotation));
+        }
+        if (enemyShipSpawn < ENEMY_SHIP_SPAWN_PROBABILITY) {
+            // Get random x and y outside of 800 x 800 square centered at
+            // (0, 0).
+            float x = randomGenerator.nextFloat() * (MAX_X - MIN_X) + MIN_X;
+            float y = randomGenerator.nextFloat() * (MAX_Y - MIN_Y) + MIN_Y;
+            // Randomly negate x and/or y.
+            x = randomGenerator.nextBoolean() ? x : -x;
+            y = randomGenerator.nextBoolean() ? y : -y;
+            addEntity(new EnemyShip(x, y));
+        }
     }
 
     @Override
@@ -278,6 +311,7 @@ public class AstralBastralGame implements Game {
     private void removeEntity(int index) {
         entities[index] = null;
         freeIndices.push(index);
+        destructionIndices.add(index);
     }
 
     private byte[] getStateUpdate() throws IOException {

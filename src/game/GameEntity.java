@@ -13,7 +13,7 @@ import java.util.Random;
 public abstract class GameEntity {
 
     // Temporary constant collision range for entities.
-    protected static final float COLLISION_RANGE = (float) 20.0;
+    protected static final float COLLISION_RANGE = (float) 32.0;
 
     // Random generator used to determine if random events such as missile
     // spawn will happen or not.
@@ -47,8 +47,8 @@ public abstract class GameEntity {
         this.rotation = rotation;
 
         // Derive coordinates of movement direction vector from rotation.
-        this.dx = (float) Math.cos(rotation - Math.PI / 2);
-        this.dy = (float) Math.sin(rotation - Math.PI / 2);
+        this.dx = (float) Math.cos(rotation);
+        this.dy = (float) Math.sin(rotation);
 
         this.hp = hp;
         this.collisionDmg = collisionDmg;

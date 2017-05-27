@@ -1,14 +1,13 @@
 package server;
 
-import org.junit.jupiter.api.Test;
 import testutil.ThreadTester;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by Paweł Kopeć on 22.04.17.
