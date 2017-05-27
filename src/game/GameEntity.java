@@ -47,8 +47,8 @@ public abstract class GameEntity {
         this.rotation = rotation;
 
         // Derive coordinates of movement direction vector from rotation.
-        this.dx = (float) Math.cos(rotation);
-        this.dy = (float) Math.sin(rotation);
+        this.dx = (float) Math.cos(rotation - Math.PI / 2);
+        this.dy = (float) Math.sin(rotation - Math.PI / 2);
 
         this.hp = hp;
         this.collisionDmg = collisionDmg;
@@ -100,7 +100,7 @@ public abstract class GameEntity {
     }
 
     // Base method used for entity movement.
-    public void move() {
+    public void move(float deltaTime) {
 
     }
 

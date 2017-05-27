@@ -29,13 +29,13 @@ public class AstralBastralGame implements Game {
     private static final int STATE_REFRESH_WINDOW_SIZE = 16;
 
     // Game field boundaries.
-    private final static float MAX_X = 1024.0f;
-    private final static float MAX_Y = 1024.0f;
-    private final static float MIN_X = -1024.0f;
-    private final static float MIN_Y = -1024.0f;
+    private final static float MAX_X = 512.0f;
+    private final static float MAX_Y = 512.0f;
+    private final static float MIN_X = -512.0f;
+    private final static float MIN_Y = -512.0f;
 
     // State update parameters.
-    private static final int REFRESH_BYTES_OFFSET = 36;
+    private static final int REFRESH_BYTES_OFFSET = 40;
 
     // Constant turrets coordinates and starting rotation.
     private static final float[] TURRET_XS = {48.0f, 48.0f, -48.0f, -48.0f};
@@ -68,6 +68,7 @@ public class AstralBastralGame implements Game {
 
     // Index of current state refresh window in entities array.
     private int stateRefreshIndex;
+    private int updateIndex;
 
 
     public AstralBastralGame() {
@@ -87,6 +88,7 @@ public class AstralBastralGame implements Game {
         destructionIndices = new ArrayList<>();
 
         stateRefreshIndex = 0;
+        updateIndex = 0;
     }
 
     @Override
@@ -168,7 +170,7 @@ public class AstralBastralGame implements Game {
     }
 
     @Override
-    public void makeTurn() {
+    public void makeTurn(float deltaTime) {
         boolean[] collisionWhiteList;
         GameEntity createdEntity;
 
@@ -193,7 +195,7 @@ public class AstralBastralGame implements Game {
         // from entities array.
         for (int i = 0; i < MAX_ENTITIES; i++) {
             if (entities[i] != null) {
-                entities[i].move();
+                entities[i].move(deltaTime);
                 if (
                     entities[i].getX() > MAX_X || entities[i].getX() < MIN_X ||
                     entities[i].getY() > MAX_Y || entities[i].getY() < MIN_Y
@@ -257,6 +259,7 @@ public class AstralBastralGame implements Game {
         // Change entities array state update window index.
         stateRefreshIndex = (stateRefreshIndex + 1) %
         STATE_REFRESH_WINDOW_SIZE;
+        updateIndex += 1;
 
     }
 
@@ -317,6 +320,7 @@ public class AstralBastralGame implements Game {
         // Output offsets of state update sectors and other necessary data.
         byteStream.reset();
         output.writeInt(EMPTY_PLAYER_INDEX);
+        output.writeInt(updateIndex);
         output.writeInt(REFRESH_BYTES_OFFSET);
         output.writeInt(REFRESH_BYTES_OFFSET + createdEntitiesBytes.length);
         output.writeInt(

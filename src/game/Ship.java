@@ -21,9 +21,9 @@ public abstract class Ship extends GameEntity {
     }
 
     @Override
-    public void move() {
-        x += speed * dx;
-        y += speed * dy;
+    public void move(float deltaTime) {
+        x += speed * dx * deltaTime;
+        y += speed * dy * deltaTime;
     }
 
 }

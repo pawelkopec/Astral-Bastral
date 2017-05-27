@@ -21,7 +21,7 @@ public interface Game {
 
     boolean isActive();
 
-    void makeTurn();
+    void makeTurn(float deltaTime);
 
     void sendUpdates();
 }

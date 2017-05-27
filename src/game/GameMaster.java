@@ -36,9 +36,13 @@ public class GameMaster {
     }
 
     public void gameLoop() throws InterruptedException {
+        int timeDivider = 1000;
+        long delta, lastLoopTime = System.currentTimeMillis();
         while (game.isActive()) {
+            delta = System.currentTimeMillis() - lastLoopTime;
+            lastLoopTime = System.currentTimeMillis();
             Thread.sleep(updateTime);
-            game.makeTurn();
+            game.makeTurn((float) delta / timeDivider);
             game.sendUpdates();
         }
     }

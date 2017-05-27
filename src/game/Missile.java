@@ -13,7 +13,7 @@ public abstract class Missile extends GameEntity {
     // Temporary constant for missile hp, dmg and speed.
     private static final int MISSILE_HP = 1;
     private static final int MISSILE_DMG = 10;
-    private static final float MISSILE_SPEED = (float) 5.0;
+    private static final float MISSILE_SPEED = (float) 100.0;
 
 
     protected MissilesTypes missileType;
@@ -28,9 +28,9 @@ public abstract class Missile extends GameEntity {
     }
 
     @Override
-    public void move() {
-        x += MISSILE_SPEED * dx;
-        y += MISSILE_SPEED * dy;
+    public void move(float deltaTime) {
+        x += MISSILE_SPEED * dx * deltaTime;
+        y += MISSILE_SPEED * dy * deltaTime;
     }
 
     @Override

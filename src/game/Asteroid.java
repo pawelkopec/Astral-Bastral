@@ -40,9 +40,9 @@ public class Asteroid extends GameEntity {
     }
 
     @Override
-    public void move() {
-        x += ASTEROID_SPEED * dx;
-        y += ASTEROID_SPEED * dy;
+    public void move(float deltaTime) {
+        x += ASTEROID_SPEED * dx * deltaTime;
+        y += ASTEROID_SPEED * dy * deltaTime;
     }
 
     public boolean[] getCollisionWhiteList(){
