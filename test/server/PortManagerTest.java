@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by vivace on 22.04.17.
+ *
+ * Tests for PortManager
  */
 class PortManagerTest {
     @Test
@@ -20,7 +22,7 @@ class PortManagerTest {
         ports.add(23098);
         ports.add(4221);
 
-        PortManager portManager = new PortManager(ports, ports.size());
+        PortManager portManager = new PortManager(ports);
 
         for(int i = 0 ; i < ports.size(); i++) {
             assertTrue(ports.contains(portManager.getAvailablePort()));
@@ -37,7 +39,7 @@ class PortManagerTest {
         ports.add(2398);
         ports.add(26751);
 
-        PortManager portManager = new PortManager(ports, ports.size());
+        PortManager portManager = new PortManager(ports);
 
         for(int i = 0 ; i < ports.size(); i++) {
             portManager.getAvailablePort();

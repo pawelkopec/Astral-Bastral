@@ -1,6 +1,7 @@
 package server;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 /**
  * Created by Paweł Kopeć on 21.03.17.
@@ -13,6 +14,14 @@ public interface AccessPoint {
     void sendData(byte[] data) throws IOException;
 
     byte[] getData() throws IOException;
+
+    InetAddress getPeerAddress();
+
+    int getPortIn();
+
+    int getPortOut();
+
+    int getPeerPort();
 
     void close();
 }

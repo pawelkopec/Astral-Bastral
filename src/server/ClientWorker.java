@@ -11,15 +11,17 @@ import java.util.Arrays;
  *
  * A runnable that serves a player.
  */
-public class ClientWorker implements Runnable{
+class ClientWorker implements Runnable{
 
     private Game game;
     private AccessPoint accessPoint;
+    private ClientConnectionManager manager;
     private int id;
 
-    public ClientWorker(Game game, AccessPoint accessPoint, int id) {
+    ClientWorker(Game game, AccessPoint accessPoint, ClientConnectionManager manager, int id) {
         this.game = game;
         this.accessPoint = accessPoint;
+        this.manager = manager;
         this.id = id;
     }
 
@@ -33,6 +35,10 @@ public class ClientWorker implements Runnable{
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stop() {
+        manager.destroyAccessPoint(accessPoint);
     }
 
     public AccessPoint getAccessPoint() {

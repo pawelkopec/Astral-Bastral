@@ -9,10 +9,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.Collection;
 
 import static server.Ports.NO_PORT;
 
@@ -27,7 +24,6 @@ public class ClientConnectionManager implements Runnable {
     private static final int CLIENT_RESPONSE_TIMEOUT = 1000000;
 
     private static final String GAME_NULL = "Game cannot be null";
-    private static final String PORT_MANAGER_NULL = "Port manager cannot be null";
 
     private static final String LISTENING_STARTED = "Started listening on port %d";
     private static final String LISTENING_FINISHED = "Finished listening on port %d";
@@ -41,18 +37,13 @@ public class ClientConnectionManager implements Runnable {
     private ServerSocket listeningSocket;
 
     private PortManager portManager;
-    private ExecutorService executor;
     private Logger logger;
 
     private boolean working = true;
 
-    public ClientConnectionManager(Game game, PortManager portManager, int listeningPort, Logger logger) throws IOException {
+    public ClientConnectionManager(Game game, Collection<Integer> ports, int listeningPort, Logger logger) throws IOException {
         if (game == null) {
             throw new NullPointerException(GAME_NULL);
-        }
-
-        if (portManager == null) {
-            throw new NullPointerException(PORT_MANAGER_NULL);
         }
 
         if (!Ports.isValidListeningPortNumber(listeningPort)) {
@@ -67,14 +58,9 @@ public class ClientConnectionManager implements Runnable {
         this.logger.initialize();
 
         this.game = game;
-        this.portManager = portManager;
+        this.portManager = new PortManager(ports);
 
         listeningSocket = new ServerSocket(listeningPort);
-        //TODO
-        executor = new ThreadPoolExecutor(1, 1,
-                CLIENT_RESPONSE_TIMEOUT,
-                TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>());
     }
 
     @Override
@@ -86,7 +72,7 @@ public class ClientConnectionManager implements Runnable {
             try {
                 socket = listeningSocket.accept();
                 logger.accept(String.format(NEW_CONNECTION, socket.getInetAddress(), socket.getPort()));
-                executor.submit(new HandleClient(socket));
+                new Thread(new HandleClient(socket)).start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -126,7 +112,7 @@ public class ClientConnectionManager implements Runnable {
                 clientOutputStream.writeInt(localPort);
 
                 if (localPort == NO_PORT) {
-                    logger.accept(String.format(NO_PORTS_AVAILABLE));
+                    logger.accept(NO_PORTS_AVAILABLE);
                     return;
                 }
 
@@ -138,7 +124,8 @@ public class ClientConnectionManager implements Runnable {
 
                 if (playerId != Game.FAILURE) {
                     logger.accept(String.format(NEW_PLAYER, playerId));
-                    new Thread(new ClientWorker(game, clientAccessPoint, playerId)).start();
+                    new Thread(new ClientWorker(game, clientAccessPoint,
+                            ClientConnectionManager.this, playerId)).start();
                 } else {
                     logger.accept(String.format(ADDING_NEW_PLAYER_FAILED, socket.getInetAddress()));
                 }
@@ -186,7 +173,7 @@ public class ClientConnectionManager implements Runnable {
         return newAccessPoint;
     }
 
-    public void destroyAccessPoint(UDPAccessPoint accessPoint) {
+    void destroyAccessPoint(AccessPoint accessPoint) {
         portManager.freePort(accessPoint.getPortIn());
         portManager.freePort(accessPoint.getPortOut());
         accessPoint.close();
@@ -196,9 +183,12 @@ public class ClientConnectionManager implements Runnable {
         return portIn != NO_PORT && portOut != NO_PORT;
     }
 
-    public void stop() throws IOException {
+    public void stop() {
+        try {
+            listeningSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         working = false;
-        listeningSocket.close();
-        //TODO
     }
 }

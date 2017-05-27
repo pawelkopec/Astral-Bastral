@@ -4,7 +4,6 @@ import game.AstralBastralGame;
 import game.Game;
 import game.GameMaster;
 import server.ClientConnectionManager;
-import server.PortManager;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -18,10 +17,9 @@ public class Main {
         ports.add(8082);
         ports.add(8083);
         ports.add(8084);
-        PortManager manager = new PortManager(ports, 2);
         Game game = new AstralBastralGame();
         game.setActive(true);
-        new Thread(new ClientConnectionManager(game, manager, 9090, null)).start();
-        new GameMaster(game, 30).gameLoop();
+        new Thread(new ClientConnectionManager(game, ports, 9090, null)).start();
+        new GameMaster(game).gameLoop();
     }
 }
