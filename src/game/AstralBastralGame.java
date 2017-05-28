@@ -110,12 +110,10 @@ public class AstralBastralGame implements Game {
         // Spawn all missiles created with this action.
         for (int i = 0; i < action.getMissilesToSpawn().length; i++) {
             missile = action.getMissilesToSpawn()[i];
-            if (missile != null && !freeIndices.empty()) {
-                addEntity(missile);
-            }
-            else {
+            if (missile == null || freeIndices.empty()) {
                 break;
             }
+            addEntity(missile);
         }
 
     }
@@ -157,11 +155,8 @@ public class AstralBastralGame implements Game {
 
     @Override
     public void removePlayer(int playerId) {
-
         // Remove turret associated with player.
-        int turretIndex = players[playerId].getTurretIndex();
-        removeEntity(turretIndex);
-
+        removeEntity(players[playerId].getTurretIndex());
         players[playerId] = null;
     }
 
@@ -303,6 +298,7 @@ public class AstralBastralGame implements Game {
         entities[freeIndex] = entity;
         createdEntities.add(entity);
         createdEntitiesIndices.add(freeIndex);
+
         return freeIndex;
     }
 
