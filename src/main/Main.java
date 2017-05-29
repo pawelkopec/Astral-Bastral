@@ -20,6 +20,6 @@ public class Main {
         Game game = new AstralBastralGame();
         game.setActive(true);
         new Thread(new ClientConnectionManager(game, ports, 9090, null)).start();
-        new GameMaster(game).gameLoop();
+        new GameMaster(game, 20).run();
     }
 }

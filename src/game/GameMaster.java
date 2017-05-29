@@ -1,13 +1,11 @@
 package game;
 
-import server.ClientConnectionManager;
-
 /**
  * Created by Paweł Kopeć on 21.03.17.
  *
  * A class that controls access to a game.
  */
-public class GameMaster {
+public class GameMaster implements Runnable {
 
     private static final String ILLEGAL_UPDATE_TIME = "Update time must be positive.";
 
@@ -25,26 +23,20 @@ public class GameMaster {
         this.updateTime = updateTime;
     }
 
-    public GameMaster(Game game) {
-        this(game, DEFAULT_UPDATE_TIME);
-    }
-
-    public void init() {
-        //ClientConnectionManager manager = new ClientConnectionManager(game);
-        //TODO manager setup
-        //new Thread(manager).start();
-    }
-
-    public void gameLoop() throws InterruptedException {
+    @Override
+    public void run() {
         int timeDivider = 1000;
         long delta, lastLoopTime = System.currentTimeMillis();
         while (game.isActive()) {
             delta = System.currentTimeMillis() - lastLoopTime;
             lastLoopTime = System.currentTimeMillis();
-            Thread.sleep(updateTime);
+            try {
+                Thread.sleep(updateTime);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             game.makeTurn((float) delta / timeDivider);
             game.sendUpdates();
         }
     }
-
 }
