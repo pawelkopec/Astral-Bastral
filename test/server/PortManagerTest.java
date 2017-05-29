@@ -1,10 +1,11 @@
 package server;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
-import junit.textui.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by vivace on 22.04.17.
