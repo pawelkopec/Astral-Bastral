@@ -57,7 +57,7 @@ class UDPAccessPoint implements AccessPoint {
     }
 
     @Override
-    public synchronized void sendData(byte[] data) throws IOException {
+    public void sendData(byte[] data) throws IOException {
         if (MAX_OUT_BUFF_SIZE < data.length) {
             throw new IllegalArgumentException(DATA_SIZE_OUT_OF_RANGE);
         }
@@ -66,7 +66,7 @@ class UDPAccessPoint implements AccessPoint {
     }
 
     @Override
-    public synchronized byte[] getData() throws IOException {
+    public byte[] getData() throws IOException {
         DatagramPacket packet = new DatagramPacket(inBuff, inBuff.length);
         in.receive(packet);
 
