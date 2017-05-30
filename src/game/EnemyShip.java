@@ -11,7 +11,7 @@ public class EnemyShip extends Ship {
     private static final int ENEMY_SHIP_HP = 50;
     private static final int ENEMY_SHIP_DMG = 10;
     private static final float ENEMY_SHIP_SPEED = (float) 15.0;
-    private static final float MISSILE_SPAWN_PROBABILITY = (float) 0.05;
+    private static final float MISSILE_SPAWN_PROBABILITY = (float) 0.01;
 
     // Collision white list unique to all enemy ships.
     private static boolean[] collisionWhiteList;
