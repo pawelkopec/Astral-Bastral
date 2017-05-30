@@ -39,8 +39,8 @@ public class AstralBastralGame implements Game {
     private static final int REFRESH_BYTES_OFFSET = 40;
 
     // Constant turrets coordinates and starting rotation.
-    private static final float[] TURRET_XS = {48.0f, 48.0f, -48.0f, -48.0f};
-    private static final float[] TURRET_YS = {48.0f, -48.0f, -48.0f, 48.0f};
+    private static final float[] TURRET_XS = {32.0f, 32.0f, -32.0f, -32.0f};
+    private static final float[] TURRET_YS = {32.0f, -32.0f, -32.0f, 32.0f};
     private static final float STARTING_ROTATION = 0f;
 
     // Constant empty player index and empty turret rotation.
@@ -95,6 +95,7 @@ public class AstralBastralGame implements Game {
         updateIndex = 0;
 
         randomGenerator = new Random();
+        addEntity(new MainShip(0, 0, 0));
     }
 
     @Override
@@ -226,8 +227,8 @@ public class AstralBastralGame implements Game {
 
     // Spawn enemy ships and/or asteroids.
     private void spawnObstacles() {
-        float ASTEROID_SPAWN_PROBABILITY = 0.1f;
-        float ENEMY_SHIP_SPAWN_PROBABILITY = 0.05f;
+        float ASTEROID_SPAWN_PROBABILITY = 0.04f;
+        float ENEMY_SHIP_SPAWN_PROBABILITY = 0.01f;
         float MIN_X = 400.0f;
         float MIN_Y = 400.0f;
         float asteroidSpawn = randomGenerator.nextFloat();
@@ -235,24 +236,24 @@ public class AstralBastralGame implements Game {
         if (asteroidSpawn < ASTEROID_SPAWN_PROBABILITY) {
             // Get random x and y outside of 800 x 800 square centered at
             // (0, 0).
-            float x = randomGenerator.nextFloat() * (MAX_X - MIN_X) + MIN_X;
-            float y = randomGenerator.nextFloat() * (MAX_Y - MIN_Y) + MIN_Y;
-            // Randomly negate x and/or y.
-            x = randomGenerator.nextBoolean() ? x : -x;
-            y = randomGenerator.nextBoolean() ? y : -y;
-            float rotation = (float) Math.PI * randomGenerator.nextFloat() / 2;
-            rotation -= (Math.PI * 5.0 / 4.0 - Math.atan2(y, x));
-            addEntity(new Asteroid(x, y, rotation));
+            float x = randomGenerator.nextFloat() * 2 * MAX_X - MAX_X;
+            float y = randomGenerator.nextFloat() * 2 * MAX_Y - MAX_Y;
+            // Check if x, y outside of bounds.
+            if (Math.abs(x) > MIN_X || Math.abs(y) > MIN_Y) {
+                float rotation = (float) Math.PI * randomGenerator.nextFloat() / 2;
+                rotation -= (Math.PI * 5.0 / 4.0 - Math.atan2(y, x));
+                addEntity(new Asteroid(x, y, rotation));
+            }
         }
         if (enemyShipSpawn < ENEMY_SHIP_SPAWN_PROBABILITY) {
             // Get random x and y outside of 800 x 800 square centered at
             // (0, 0).
-            float x = randomGenerator.nextFloat() * (MAX_X - MIN_X) + MIN_X;
-            float y = randomGenerator.nextFloat() * (MAX_Y - MIN_Y) + MIN_Y;
+            float x = randomGenerator.nextFloat() * 2 * MAX_X - MAX_X;
+            float y = randomGenerator.nextFloat() * 2 * MAX_Y - MAX_Y;
             // Randomly negate x and/or y.
-            x = randomGenerator.nextBoolean() ? x : -x;
-            y = randomGenerator.nextBoolean() ? y : -y;
-            addEntity(new EnemyShip(x, y));
+            if (Math.abs(x) > MIN_X || Math.abs(y) > MIN_Y) {
+                addEntity(new EnemyShip(x, y));
+            }
         }
     }
 
