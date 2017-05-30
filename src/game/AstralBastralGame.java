@@ -239,7 +239,7 @@ public class AstralBastralGame implements Game {
                     if (
                         entities.get(i).getType() ==
                         GameEntitiesTypes.ENEMY_SHIP &&
-                        ((EnemyShip) entities.get(i).getKillerIndex() !=
+                        ((EnemyShip) entities.get(i)).getKillerIndex() !=
                         EnemyShip.NO_KILLER
                     ) {
                         scores[((EnemyShip) entities.get(i)).getKillerIndex()] +=
