@@ -272,9 +272,7 @@ public class AstralBastralGame implements Game {
         for (int i = 0; i < MAX_PLAYERS; i++) {
             if (players[i] != null) {
                 bytes = ByteBuffer.allocate(INT_SIZE).putInt(i).array();
-                for (int j = 0; j < INT_SIZE; j++) {
-                    update[j] = bytes[j];
-                }
+                System.arraycopy(bytes, 0, update, 0, INT_SIZE);
                 try {
                     players[i].sendUpdate(update);
                 }
