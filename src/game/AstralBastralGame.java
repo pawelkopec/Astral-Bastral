@@ -103,9 +103,9 @@ public class AstralBastralGame implements Game {
         }
 
         // Create lists for created and destroyed entities.
-        createdEntities = new ArrayList<>();
-        createdEntitiesIndices = new ArrayList<>();
-        destructionIndices = new ArrayList<>();
+        createdEntities = new Vector<>();
+        createdEntitiesIndices = new Vector<>();
+        destructionIndices = new Vector<>();
 
         stateRefreshIndex = 0;
         updateIndex = 0;
@@ -239,7 +239,7 @@ public class AstralBastralGame implements Game {
                     if (
                         entities.get(i).getType() ==
                         GameEntitiesTypes.ENEMY_SHIP &&
-                        ((EnemyShip) entities.get(i).getKillerIndex() !=
+                        ((EnemyShip) entities.get(i)).getKillerIndex() !=
                         EnemyShip.NO_KILLER
                     ) {
                         scores[((EnemyShip) entities.get(i)).getKillerIndex()] +=
@@ -313,6 +313,15 @@ public class AstralBastralGame implements Game {
         stateRefreshIndex = (stateRefreshIndex + 1) %
         STATE_REFRESH_WINDOW_SIZE;
         updateIndex += 1;
+
+        if (defeat) {
+            for(Player p: players) {
+                p.getAccessPoint().close();
+            }
+
+            gameActive = false;
+            System.out.println("Game closed");
+        }
 
     }
 
