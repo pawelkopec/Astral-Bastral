@@ -36,7 +36,7 @@ public class AstralBastralGame implements Game {
     private final static float MIN_Y = -512.0f;
 
     // State update parameters.
-    private static final int REFRESH_BYTES_OFFSET = 44;
+    private static final int REFRESH_BYTES_OFFSET = 60;
 
     // Constant turrets coordinates and starting rotation.
     private static final float[] TURRET_XS = {32.0f, 32.0f, -32.0f, -32.0f};
@@ -52,6 +52,9 @@ public class AstralBastralGame implements Game {
 
     // Constant index to main ship.
     private static final int MAIN_SHIP_INDEX = 0;
+
+    // Score assigned for killing one enemy ship.
+    private static final int KILL_SCORE = 10;
 
     private boolean gameActive = false;
 
@@ -228,6 +231,15 @@ public class AstralBastralGame implements Game {
                     }
                 }
                 if (!entities[i].isActive()) {
+                    if (
+                        entities[i].getType() ==
+                        GameEntitiesTypes.ENEMY_SHIP &&
+                        ((EnemyShip) entities[i]).getKillerIndex() !=
+                        EnemyShip.NO_KILLER
+                    ) {
+                        scores[((EnemyShip) entities[i]).getKillerIndex()] +=
+                            KILL_SCORE;
+                    }
                     removeEntity(i);
                 }
             }
@@ -314,7 +326,7 @@ public class AstralBastralGame implements Game {
     // index to stack of unused array indices.
     private void removeEntity(int index) {
         if (entities[index].getType() == GameEntitiesTypes.MAIN_SHIP) {
-            // TODO SIGNAL DEFEAT
+            defeat = true;
         }
         entities[index] = null;
         freeIndices.push(index);
@@ -383,6 +395,14 @@ public class AstralBastralGame implements Game {
             }
             else {
                 output.writeFloat(EMPTY_ROTATION);
+            }
+        }
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            if (players[i] != null) {
+                output.writeInt(scores[i]);
+            }
+            else {
+                output.writeInt(0);
             }
         }
 
