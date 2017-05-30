@@ -8,7 +8,7 @@ package game;
 public class MainShip extends Ship {
 
     // Main ship constants: its hp, collision dmg and speed.
-    private static final int MAIN_SHIP_HP = 10000;
+    private static final int MAIN_SHIP_HP = 5000;
     private static final int MAIN_SHIP_DMG = 50;
     private static final float MAIN_SHIP_SPEED = (float) 0.0;
 
@@ -43,6 +43,11 @@ public class MainShip extends Ship {
 
     public boolean[] getCollisionWhiteList(){
         return collisionWhiteList;
+    }
+
+    // Access to man ship hp.
+    public int getHp() {
+        return this.hp;
     }
 
 }

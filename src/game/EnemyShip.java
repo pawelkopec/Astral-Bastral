@@ -41,6 +41,11 @@ public class EnemyShip extends Ship {
         );
     }
 
+    @Override
+    public void collideWith(GameEntity entity) {
+
+    }
+
     public boolean[] getCollisionWhiteList(){
         return collisionWhiteList;
     }

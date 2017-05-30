@@ -40,7 +40,7 @@ public class Action {
     private Missile [] missilesToSpawn = new Missile[MAX_MISSILES_PER_ACTION];
 
 
-    public Action(byte [] rawActionDescription) {
+    public Action(byte [] rawActionDescription, int playerId) {
 
         // Create a ByteBuffer object from the provided byte array
         // to simplify the data extraction.
@@ -85,7 +85,8 @@ public class Action {
                     missileType,
                     missileX,
                     missileY,
-                    missileRotation
+                    missileRotation,
+                    playerId
                 );
             }
 

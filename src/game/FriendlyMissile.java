@@ -25,16 +25,24 @@ public class FriendlyMissile extends Missile {
         collisionWhiteList[GameEntitiesTypes.ASTEROID.getValue()] = true;
     }
 
+    private int ownerIndex;
 
     public FriendlyMissile(
         MissilesTypes missileType,
-        float x, float y, float rotation
+        float x, float y, float rotation, int ownerIndex
     ) {
         super(GameEntitiesTypes.FRIENDLY_MISSILE, missileType, x, y, rotation);
+        this.ownerIndex = ownerIndex;
     }
 
     public boolean[] getCollisionWhiteList(){
         return collisionWhiteList;
     }
 
+    // Access to the missile owner index.
+    public int getOwnerIndex() {
+        return ownerIndex;
+    }
+
 }
+

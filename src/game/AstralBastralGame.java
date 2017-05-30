@@ -36,7 +36,7 @@ public class AstralBastralGame implements Game {
     private final static float MIN_Y = -512.0f;
 
     // State update parameters.
-    private static final int REFRESH_BYTES_OFFSET = 40;
+    private static final int REFRESH_BYTES_OFFSET = 44;
 
     // Constant turrets coordinates and starting rotation.
     private static final float[] TURRET_XS = {32.0f, 32.0f, -32.0f, -32.0f};
@@ -50,10 +50,14 @@ public class AstralBastralGame implements Game {
     // Constant int size.
     private static final int INT_SIZE = 4;
 
+    // Constant index to main ship.
+    private static final int MAIN_SHIP_INDEX = 0;
+
     private boolean gameActive = false;
 
-    // Arrays of all in-game entities and players.
+    // Arrays of all in-game entities, players and their scores.
     private Player [] players;
+    private int [] scores;
     private GameEntity [] entities;
 
     // Stack of unoccupied indices in entities array.
@@ -74,9 +78,13 @@ public class AstralBastralGame implements Game {
     // Game random generator.
     protected static Random randomGenerator;
 
+    // Indicator of defeat.
+    private boolean defeat = false;
+
 
     public AstralBastralGame() {
         players = new Player[MAX_PLAYERS];
+        scores = new int[MAX_PLAYERS];
         entities = new GameEntity[MAX_ENTITIES];
 
         // Create and initialize stack of free indices with all possible
@@ -102,7 +110,7 @@ public class AstralBastralGame implements Game {
     public void performAction(byte[] args, int playerId) {
 
         // Rotate turret assigned to player.
-        Action action = new Action(args);
+        Action action = new Action(args, playerId);
         int turretIndex = players[playerId].getTurretIndex();
         ((Turret) entities[turretIndex]).rotate(action.getRotation());
 
@@ -148,6 +156,7 @@ public class AstralBastralGame implements Game {
                 turretIndex = addEntity(playerTurret);
 
                 players[i] = new Player(i, turretIndex, accessPoint);
+                scores[i] = 0;
                 return i;
             }
         }
@@ -306,6 +315,9 @@ public class AstralBastralGame implements Game {
     // Simple method used to remove entity from the array and add its array
     // index to stack of unused array indices.
     private void removeEntity(int index) {
+        if (entities[index].getType() == GameEntitiesTypes.MAIN_SHIP) {
+            // TODO SIGNAL DEFEAT
+        }
         entities[index] = null;
         freeIndices.push(index);
         destructionIndices.add(index);
@@ -352,6 +364,12 @@ public class AstralBastralGame implements Game {
         byteStream.reset();
         output.writeInt(EMPTY_PLAYER_INDEX);
         output.writeInt(updateIndex);
+        if (defeat) {
+            output.writeInt(0);
+        }
+        else {
+            output.writeInt(((MainShip) entities[MAIN_SHIP_INDEX]).getHp());
+        }
         output.writeInt(REFRESH_BYTES_OFFSET);
         output.writeInt(REFRESH_BYTES_OFFSET + createdEntitiesBytes.length);
         output.writeInt(
