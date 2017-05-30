@@ -97,5 +97,8 @@ class UDPAccessPoint implements AccessPoint {
     public void close() {
         in.close();
         out.close();
+
+        System.out.println("Access point to " + peerAddress + ":" + peerPort + " closed." +
+                           " Ports " + getPortIn() + " and " + getPortOut() + " freed");
     }
 }

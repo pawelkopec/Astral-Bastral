@@ -39,4 +39,8 @@ public class Player {
         accessPoint.sendData(update);
     }
 
+    AccessPoint getAccessPoint() {
+        return accessPoint;
+    }
+
 }

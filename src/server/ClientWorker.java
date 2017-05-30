@@ -37,6 +37,7 @@ class ClientWorker implements Runnable{
                 counter.reset();
             }
         } catch (IOException ignored) {
+            System.out.println("Player of id " + playerId + " lost connection.");
         } finally {
             stop();
         }
@@ -49,7 +50,7 @@ class ClientWorker implements Runnable{
             manager.destroyAccessPoint(accessPoint);
 
             //TODO logger
-            System.out.println("Player of id " + playerId + " lost connection.");
+            System.out.println("Player of id " + playerId + " removed.");
         }
     }
 }
