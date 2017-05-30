@@ -6,10 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 
 /**
@@ -56,9 +53,9 @@ public class AstralBastralGame implements Game {
     private boolean gameActive = false;
 
     // Arrays of all in-game entities, players and their scores.
-    private Player [] players;
+    private Vector<Player> players;
     private int [] scores;
-    private GameEntity [] entities;
+    private Vector<GameEntity> entities;
 
     // Stack of unoccupied indices in entities array.
     private Stack<Integer> freeIndices;
@@ -83,9 +80,17 @@ public class AstralBastralGame implements Game {
 
 
     public AstralBastralGame() {
-        players = new Player[MAX_PLAYERS];
+        players = new Vector<>(MAX_PLAYERS);
         scores = new int[MAX_PLAYERS];
-        entities = new GameEntity[MAX_ENTITIES];
+        entities = new Vector<>(MAX_ENTITIES);
+
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            players.add(null);
+        }
+
+        for (int i = 0; i < MAX_ENTITIES; i++) {
+            entities.add(null);
+        }
 
         // Create and initialize stack of free indices with all possible
         // indices.
@@ -111,8 +116,8 @@ public class AstralBastralGame implements Game {
 
         // Rotate turret assigned to player.
         Action action = new Action(args, playerId);
-        int turretIndex = players[playerId].getTurretIndex();
-        ((Turret) entities[turretIndex]).rotate(action.getRotation());
+        int turretIndex = players.get(playerId).getTurretIndex();
+        ((Turret) entities.get(turretIndex)).rotate(action.getRotation());
 
         Missile missile;
 
@@ -133,15 +138,15 @@ public class AstralBastralGame implements Game {
         Turret playerTurret;
         int turretIndex;
         for (int i = 0; i < MAX_PLAYERS; i++) {
-            if (players[i] == null) {
+            if (players.get(i) == null) {
 
                 // If there is not space in entities array remove first
                 // encountered asteroid, missile or enemy space ship.
                 if (freeIndices.empty()) {
                     for (int j = 0; j < MAX_ENTITIES; j++) {
                         if (
-                            entities[j].getType() != GameEntitiesTypes.TURRET &&
-                            entities[j].getType() != GameEntitiesTypes.MAIN_SHIP
+                            entities.get(j).getType() != GameEntitiesTypes.TURRET &&
+                            entities.get(j).getType() != GameEntitiesTypes.MAIN_SHIP
                         ) {
                             removeEntity(j);
                             break;
@@ -155,7 +160,7 @@ public class AstralBastralGame implements Game {
                 );
                 turretIndex = addEntity(playerTurret);
 
-                players[i] = new Player(i, turretIndex, accessPoint);
+                players.set(i, new Player(i, turretIndex, accessPoint));
                 scores[i] = 0;
                 return i;
             }
@@ -166,8 +171,8 @@ public class AstralBastralGame implements Game {
     @Override
     public void removePlayer(int playerId) {
         // Remove turret associated with player.
-        removeEntity(players[playerId].getTurretIndex());
-        players[playerId] = null;
+        removeEntity(players.get(playerId).getTurretIndex());
+        players.set(playerId, null);
     }
 
     @Override
@@ -188,8 +193,8 @@ public class AstralBastralGame implements Game {
         spawnObstacles();
         for (int i = 0; i < MAX_ENTITIES; i++) {
             // If there is space in entities array left.
-            if (entities[i] != null && !freeIndices.empty()) {
-                createdEntity = entities[i].act();
+            if (entities.get(i) != null && !freeIndices.empty()) {
+                createdEntity = entities.get(i).act();
                 if (createdEntity != null) {
                     addEntity(createdEntity);
                 }
@@ -202,11 +207,11 @@ public class AstralBastralGame implements Game {
         // Second stage: move all entities. If they exit game field delete them
         // from entities array.
         for (int i = 0; i < MAX_ENTITIES; i++) {
-            if (entities[i] != null) {
-                entities[i].move(deltaTime);
+            if (entities.get(i) != null) {
+                entities.get(i).move(deltaTime);
                 if (
-                    entities[i].getX() > MAX_X || entities[i].getX() < MIN_X ||
-                    entities[i].getY() > MAX_Y || entities[i].getY() < MIN_Y
+                    entities.get(i).getX() > MAX_X || entities.get(i).getX() < MIN_X ||
+                    entities.get(i).getY() > MAX_Y || entities.get(i).getY() < MIN_Y
                 ) {
                     removeEntity(i);
                 }
@@ -215,19 +220,19 @@ public class AstralBastralGame implements Game {
         // Third stage: check collision between entities and remove these,
         // which die as a result of it.
         for (int i = 0; i < MAX_ENTITIES; i++) {
-            if (entities[i] != null) {
-                collisionWhiteList = entities[i].getCollisionWhiteList();
+            if (entities.get(i) != null) {
+                collisionWhiteList = entities.get(i).getCollisionWhiteList();
                 for (int j = i + 1; j < MAX_ENTITIES; j++) {
                     if (
-                        entities[j] != null && entities[j].isActive() &&
-                        collisionWhiteList[entities[j].getType().getValue()] &&
-                        entities[i].isCollidingWith(entities[j])
+                        entities.get(j) != null && entities.get(j).isActive() &&
+                        collisionWhiteList[entities.get(j).getType().getValue()] &&
+                        entities.get(i).isCollidingWith(entities.get(j))
                     ) {
-                        entities[i].collideWith(entities[j]);
-                        entities[j].collideWith(entities[i]);
+                        entities.get(i).collideWith(entities.get(j));
+                        entities.get(j).collideWith(entities.get(i));
                     }
                 }
-                if (!entities[i].isActive()) {
+                if (!entities.get(i).isActive()) {
                     removeEntity(i);
                 }
             }
@@ -280,11 +285,11 @@ public class AstralBastralGame implements Game {
         // Send updates to all players.
         byte[] bytes;
         for (int i = 0; i < MAX_PLAYERS; i++) {
-            if (players[i] != null) {
+            if (players.get(i) != null) {
                 bytes = ByteBuffer.allocate(INT_SIZE).putInt(i).array();
                 System.arraycopy(bytes, 0, update, 0, INT_SIZE);
                 try {
-                    players[i].sendUpdate(update);
+                    players.get(i).sendUpdate(update);
                 }
                 catch (IOException exception) {
                     // TODO
@@ -303,7 +308,7 @@ public class AstralBastralGame implements Game {
     // It returns index at which entity was added to entities array.
     private int addEntity(GameEntity entity) {
         int freeIndex = freeIndices.pop();
-        entities[freeIndex] = entity;
+        entities.set(freeIndex, entity);
         createdEntities.add(entity);
         createdEntitiesIndices.add(freeIndex);
 
@@ -313,10 +318,10 @@ public class AstralBastralGame implements Game {
     // Simple method used to remove entity from the array and add its array
     // index to stack of unused array indices.
     private void removeEntity(int index) {
-        if (entities[index].getType() == GameEntitiesTypes.MAIN_SHIP) {
+        if (entities.get(index).getType() == GameEntitiesTypes.MAIN_SHIP) {
             // TODO SIGNAL DEFEAT
         }
-        entities[index] = null;
+        entities.set(index, null);
         freeIndices.push(index);
         destructionIndices.add(index);
     }
@@ -329,10 +334,10 @@ public class AstralBastralGame implements Game {
         // Get state update entities array window bytes.
         byteStream.reset();
         for (int i = 0; i < STATE_REFRESH_SIZE; i++) {
-            if (entities[stateRefreshIndex * STATE_REFRESH_SIZE + i] != null) {
-                entities[
+            if (entities.get(stateRefreshIndex * STATE_REFRESH_SIZE + i) != null) {
+                entities.get(
                     stateRefreshIndex * STATE_REFRESH_SIZE + i
-                ].writeTo(output);
+                ).writeTo(output);
             }
             else {
                 output.writeShort(GameEntitiesTypes.EMPTY_ENTITY.getValue());
@@ -366,7 +371,7 @@ public class AstralBastralGame implements Game {
             output.writeInt(0);
         }
         else {
-            output.writeInt(((MainShip) entities[MAIN_SHIP_INDEX]).getHp());
+            output.writeInt(((MainShip) entities.get(MAIN_SHIP_INDEX)).getHp());
         }
         output.writeInt(REFRESH_BYTES_OFFSET);
         output.writeInt(REFRESH_BYTES_OFFSET + createdEntitiesBytes.length);
@@ -376,9 +381,9 @@ public class AstralBastralGame implements Game {
         );
         output.writeInt(stateRefreshIndex);
         for (int i = 0; i < MAX_PLAYERS; i++) {
-            if (players[i] != null) {
+            if (players.get(i) != null) {
                 output.writeFloat(
-                    entities[players[i].getTurretIndex()].getRotation()
+                    entities.get(players.get(i).getTurretIndex()).getRotation()
                 );
             }
             else {
